@@ -1,0 +1,12 @@
+1. root -L ene_edep_res.cc\+\(x,y,z\)
+x, y, and z indicates the size of the crystal.
+As you can see from the script, the inputs is just to select the simulation outputfile.
+Currently, it selects the outputfile as an example: ./resolution_x_xmm_y_ymm_z_zmm_10GeV_4m_1.root
+This scripts requires 10 simulation outputfiles for each beam energy (0.5 GeV, 1GeV, 3.25GeV, 5.5GeV, 7.75GeV, and 10GeV).
+You can modify however you prefer.
+
+2. root ene_edep_combine.cc
+This script uses the output files from the previous script.
+As you can see from the script, the files it uses are:
+20X20X200 to 40X40X600 mm3 glasses.
+You can also modify however you prefer.

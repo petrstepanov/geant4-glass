@@ -1,0 +1,10 @@
+geant4-sources
+root-sources
+output-*
+*farm-5000events
+build
+macros
+output
+.settings
+.project
+.cproject

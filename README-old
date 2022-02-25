@@ -1,0 +1,73 @@
+2018-07-09
+Using Bogdan's magnetic fields.
+Target Length : 10cm.
+
+2018-07-19
+PhysicsList class has been changed from TestEm09's to B3's
+StepMax class is no more used(not has been used before)
+
+2018-07-24
+Using FTFP_BERT physics list
+
+2018-07-30
+target size changed 15cm, 5mm target cover
+
+2018-08-01
+target size changed once more, 15cm length, 5cm diameter, 125um target cover
+Using physicslist from Hadr01.(hadron physics)
+
+2018-08-14
+Reduce simulation time
+1. WorldMater : Air->Vacuum
+2. Kill track after detection.
+
+2019-01-10
+Physical volumes always exist.
+Except sweeping magnet.
+Field ON  : sweeping magnet exist.
+Field OFF : no sweeping magnet. 
+
+2019-02-27
+Only Calorimeter exists.
+This is to plot shower profile.
+Every step in the simulation, deposited energy and position is recorded.
+
+2019-03-20
+1116->1080
+Each event(primary beam), tree for the energy resolution is saved.
+
+
+2019-11-05
+Copied from git->jlab_HallC_NPS_Energy_Resolution_Simulation/
+Check the effect of energy resolution with 2mm of iron plate.
+
+2019-11-26
+*_05112019_1 is the originals
+
+2019-11-27
+*_27112019_1 : HistoManager.cc & SteppingAction.cc 's originals
+removed saving shower profile inside the crystals.(too much memories!!)
+
+2020-02-10
+This is to see the energy resolution dependence of the glass scintillator
+on the size of the material.
+The glass scintillator is for the EIC EMcalorimeter.
+It is to test the 3X3 prototype and to decide the size of the scintillator
+before going in to the production for the prototype test.
+Won't be any optical photon physics process.
+Only the Edep will be recorded.
+
+2020-10-10
+Added .gitignore
+Fixed missing includes and sources location in CMakeLists.txt
+Added instructions to generate Eclipse project with debugging functionality.
+
+In order to set up the Eclipse project I recommend out-of-source build because:
+* I've ran into Eclipse indexing problems with in-source build.
+* Out-of-source build separates generated files from source files. It's is easier to exclude the build folder with Eclopse project in `.gitignore`.
+
+Steps to generate Eclipse project:
+  mkdir -p glass_prototype_build && cd glass_prototype_build
+  cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_BUILD_TYPE=Debug ../glass_prototype/source
+
+Open project in Eclipse with File → Open Projects From Filesystem... and open the `glass_prototype_build` folder.

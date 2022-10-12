@@ -37,6 +37,9 @@ private:
 //  G4int firstTOFNtupleId;
 //  G4int* TOFNtupleIds;
 
+  //       event_number  ntuple_number
+  std::map<int,          int> eventNumberToNTupleNumber;
+
 public:
   virtual ~G4Utils();
 
@@ -97,15 +100,15 @@ public:
 
   static G4double getWavelength(const G4Track* track);
 
+  static G4String getOutputFileName(G4String suffix = "");
+
   G4String getTOFNtupleName(G4int eventNumber = -1);
+
+  G4int getNTupleNumber(G4int eventNumber = -1);
 
   void prepareTOFNtuple(G4int eventNumber = -1);
 
   static G4String getCreatorProcessSafe(const G4Track* track);
-
-//  G4int getFirstTOFNtupleId();
-
-//  G4int getMaxTofEventsOFNtupleId();
 };
 
 #endif /* SRC_G4UTILS_HH_ */

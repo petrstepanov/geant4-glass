@@ -27,8 +27,8 @@ file(GLOB DRAW_SCRIPTS CONFIGURE_DEPENDS
                   ${PROJECT_SOURCE_DIR}/*.cxx
                   ${PROJECT_SOURCE_DIR}/*.cc
                   ${PROJECT_SOURCE_DIR}/*.c)
-message(STATUS "Found list of ROOT draw scripts:")
-message(STATUS "${DRAW_SCRIPTS}")
+# message(STATUS "Found list of ROOT draw scripts:")
+# message(STATUS "${DRAW_SCRIPTS}")
 
 #SET(DRAW_SCRIPTS ${PROJECT_SOURCE_DIR}/tof.cpp)
 
@@ -38,8 +38,8 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
                   ${PROJECT_SOURCE_DIR}/src/*.cxx
                   ${PROJECT_SOURCE_DIR}/src/*.cc
                   ${PROJECT_SOURCE_DIR}/src/*.c)
-message(STATUS "Found list of dependent C++ source files:")
-message(STATUS "${SOURCES}")
+# message(STATUS "Found list of dependent C++ source files:")
+# message(STATUS "${SOURCES}")
 
 # Find headers in project
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS 
@@ -47,8 +47,8 @@ file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS
                   ${PROJECT_SOURCE_DIR}/include/*.hxx
                   ${PROJECT_SOURCE_DIR}/include/*.hh
                   ${PROJECT_SOURCE_DIR}/include/*.h)
-message(STATUS "Found list of dependent C++ header files:")
-message(STATUS "${HEADERS}")                  
+# message(STATUS "Found list of dependent C++ header files:")
+# message(STATUS "${HEADERS}")                  
 
 # Compose list of ROOT libraries with "ROOT::" prefix
   set(LIB_NAMES "")
@@ -66,8 +66,20 @@ message(STATUS "${HEADERS}")
   list(APPEND LIB_NAMES "ROOT::Minuit")
   list(APPEND LIB_NAMES "ROOT::Fumili")
 
+# Find my custom CanvasHelper shared library and add it to the . 
+# First parameter here is result of found library - its location. Refer to CMake docs how to find in Env Variable
+find_library(CH_LIBRARY_LOCATION CanvasHelper PATHS ENV LD_LIBRARY_PATH)
+message(STATUS "Found CanvasHelper library: ${CH_LIBRARY_LOCATION}")
+list(APPEND LIB_NAMES "${CH_LIBRARY_LOCATION}")
+
+# Find my custom CanvasHelper shared library and add it to the . 
+# First parameter here is result of found library - its location. Refer to CMake docs how to find in Env Variable
+find_library(RU_LIBRARY_LOCATION RootUtils PATHS ENV LD_LIBRARY_PATH)
+message(STATUS "Found CanvasHelper library: ${RU_LIBRARY_LOCATION}")
+list(APPEND LIB_NAMES "${RU_LIBRARY_LOCATION}")
+
 # Build every ROOT script individually
-foreach(SCRIPT ${DRAW_SCRIPTS})	
+foreach(SCRIPT ${DRAW_SCRIPTS})
 	
   # Compose the executable name - remove script extension
   get_filename_component(EXECUTABLE "${SCRIPT}" NAME_WE)

@@ -34,9 +34,9 @@
 #ifndef DetectorMessenger_h
 #define DetectorMessenger_h 1
 
-#include "G4UImessenger.hh"
-#include "G4UIcmdWith3VectorAndUnit.hh"
-#include "globals.hh"
+#include <globals.hh>
+#include <G4UImessenger.hh>
+#include <G4UIcmdWith3VectorAndUnit.hh>
 
 class DetectorConstruction;
 class G4UIdirectory;
@@ -55,7 +55,6 @@ class DetectorMessenger: public G4UImessenger
    ~DetectorMessenger();
     
     virtual void SetNewValue(G4UIcommand*, G4String);
-//    G4String GetCurrentValue(G4UIcommand* command);
 
   private:
     // Detector instance for
@@ -75,10 +74,19 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit* fSetWrapThicknessCmd;
     G4UIcmdWithAString* fSetGreaseTypeCmd;
     G4UIcmdWithABool* fSetReflectiveShieldCmd;
-    G4UIcmdWithABool* fSaveEnergyDepositionCmd;
-    G4UIcmdWithABool* fSaveUnitEnergyDepositionCmd;
-    G4UIcmdWithABool* fSaveEnergyWorldEscapeCommand;
-    G4UIcmdWithABool* fVisualizeEnergyDepositionCmd;
+
+    G4UIcmdWithABool* fUsePrimitiveScorerCmd;
+    G4UIcmdWithABool* fUseScoringMeshesCmd;
+    G4UIcmdWithABool* fSaveEnergyWorldEscapeCmd;
+    G4UIcmdWithABool* fSaveTimeOfFlightCmd;
+    G4UIcmdWithABool* fUseUnitVolumeScoringMeshesCmd;
+
+  public:
+    static const G4bool usePrimitiveScorerCmdDefaultValue = true;
+    static const G4bool useScoringMeshesCmdDefaultValue = true;
+    static const G4bool saveEnergyWorldEscapeCmdDefaultValue = true;
+    static const G4bool useUnitVolumeScoringMeshesCmdDefaultValue = true;
+    static const G4bool saveTimeOfFlightCmdDefaultValue = false;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

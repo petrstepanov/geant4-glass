@@ -42,23 +42,23 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DetectorMessenger::DetectorMessenger(DetectorConstruction* Det) : G4UImessenger(), fDetectorConstruction(Det) {
-	// Instantiate the Command directory
-	fDirectory = new G4UIdirectory("/detector/");
-	fDirectory->SetGuidance("Commands for Detector construction");
+DetectorMessenger::DetectorMessenger(DetectorConstruction *Det) : G4UImessenger(), fDetectorConstruction(Det) {
+  // Instantiate the Command directory
+  fDirectory = new G4UIdirectory("/detector/");
+  fDirectory->SetGuidance("Commands for Detector construction");
 
-	// Instantiate command for setting the gap between crystals
-	fSetGapCmd = new G4UIcmdWithADoubleAndUnit("/detector/setGap", this);
-	fSetGapCmd->SetGuidance("Set the gap between the crystals.");
-	fSetGapCmd->SetUnitCategory("Length");
-	fSetGapCmd->SetParameterName("choice", false);
-	fSetGapCmd->AvailableForStates(G4ApplicationState::G4State_PreInit);
+  // Instantiate command for setting the gap between crystals
+  fSetGapCmd = new G4UIcmdWithADoubleAndUnit("/detector/setGap", this);
+  fSetGapCmd->SetGuidance("Set the gap between the crystals.");
+  fSetGapCmd->SetUnitCategory("Length");
+  fSetGapCmd->SetParameterName("choice", false);
+  fSetGapCmd->AvailableForStates(G4ApplicationState::G4State_PreInit);
 
-	// Instantiate command for setting crystal size
-	fSetCrystalSizeCmd = new G4UIcmdWith3VectorAndUnit("/detector/setCrystalSize", this);
-	fSetCrystalSizeCmd->SetGuidance("Set crystal size");
-	fSetCrystalSizeCmd->SetDefaultUnit("mm");
-	fSetCrystalSizeCmd->AvailableForStates(G4ApplicationState::G4State_PreInit);
+  // Instantiate command for setting crystal size
+  fSetCrystalSizeCmd = new G4UIcmdWith3VectorAndUnit("/detector/setCrystalSize", this);
+  fSetCrystalSizeCmd->SetGuidance("Set crystal size");
+  fSetCrystalSizeCmd->SetDefaultUnit("mm");
+  fSetCrystalSizeCmd->AvailableForStates(G4ApplicationState::G4State_PreInit);
 
   // Instantiate command for setting crystal Material
   fSetCrystalMaterialCmd = new G4UIcmdWithAString("/detector/setCrystalMaterial", this);
@@ -77,7 +77,8 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det) : G4UImessenger(
 
   // Instantiate command for setting PMT diameter
   fSetDetectorTypeCmd = new G4UIcmdWithAString("/detector/setDetectorType", this);
-  fSetDetectorTypeCmd->SetGuidance("Set PMT type, \"R1425\" (or \"R1450\" - default ~ 18 mm) or \"R2059\" (~ 53 mm) or \"S13360-6025CS\" for MPPC");
+  fSetDetectorTypeCmd->SetGuidance(
+      "Set PMT type, \"R1425\" (or \"R1450\" - default ~ 18 mm) or \"R2059\" (~ 53 mm) or \"S13360-6025CS\" for MPPC");
   fSetDetectorTypeCmd->AvailableForStates(G4ApplicationState::G4State_PreInit);
 
   // Instantiate command for crystal wrap thickness
@@ -110,25 +111,25 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction* Det) : G4UImessenger(
   fSetReflectiveShieldCmd->AvailableForStates(G4ApplicationState::G4State_PreInit);
   fSetReflectiveShieldCmd->SetDefaultValue(false);
 
-  fSaveEnergyDepositionCmd = new G4UIcmdWithABool("/detector/saveEnergyDeposition", this);
-  fSaveEnergyDepositionCmd->SetGuidance("Register energy deposition in crystals on/off");
-//  fSaveEnergyDepositionCmd->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Init, );
-  fSaveEnergyDepositionCmd->SetDefaultValue(true);
+  fUsePrimitiveScorerCmd = new G4UIcmdWithABool("/detector/usePrimitiveScorer", this);
+  fUsePrimitiveScorerCmd->SetGuidance("Register energy deposition in crystals via PrimitiveScorer on/off");
+  fUsePrimitiveScorerCmd->SetDefaultValue(usePrimitiveScorerCmdDefaultValue);
 
-  fSaveUnitEnergyDepositionCmd = new G4UIcmdWithABool("/detector/saveUnitEnergyDeposition", this);
-  fSaveUnitEnergyDepositionCmd->SetGuidance("Visualize on/off");
-//   fVisualizeEnergyDepositionCmd->AvailableForStates(G4ApplicationState::G4State_PreInit);
-  fSaveUnitEnergyDepositionCmd->SetDefaultValue(true);
+  fUseScoringMeshesCmd = new G4UIcmdWithABool("/detector/useGlobalScoringMeshes", this);
+  fUseScoringMeshesCmd->SetGuidance("Visualize and save energy deposition in crystals and global mesh on/off");
+  fUseScoringMeshesCmd->SetDefaultValue(useScoringMeshesCmdDefaultValue);
 
-  fSaveEnergyWorldEscapeCommand = new G4UIcmdWithABool("/detector/saveEnergyWorldEscape", this);
-  fSaveEnergyWorldEscapeCommand->SetGuidance("Control output of the particles escaping the World.");
-//   fSaveEnergyWorldEscapeCommand->AvailableForStates(G4ApplicationState::G4State_PreInit);
-  fSaveEnergyWorldEscapeCommand->SetDefaultValue(true);
+  fSaveTimeOfFlightCmd = new G4UIcmdWithABool("/detector/saveTimeOfFlight", this);
+  fSaveTimeOfFlightCmd->SetGuidance("Save time-of-flight information of the detected photons on/off");
+  fSaveTimeOfFlightCmd->SetDefaultValue(saveTimeOfFlightCmdDefaultValue);
 
-  fVisualizeEnergyDepositionCmd = new G4UIcmdWithABool("/detector/visualizeEnergyDeposition", this);
-  fVisualizeEnergyDepositionCmd->SetGuidance("Visualize on/off");
-//   fVisualizeEnergyDepositionCmd->AvailableForStates(G4ApplicationState::G4State_PreInit);
-  fVisualizeEnergyDepositionCmd->SetDefaultValue(true);
+  fSaveEnergyWorldEscapeCmd = new G4UIcmdWithABool("/detector/saveEnergyWorldEscape", this);
+  fSaveEnergyWorldEscapeCmd->SetGuidance("Control output of the particles escaping the World.");
+  fSaveEnergyWorldEscapeCmd->SetDefaultValue(saveEnergyWorldEscapeCmdDefaultValue);
+
+  fUseUnitVolumeScoringMeshesCmd = new G4UIcmdWithABool("/detector/useUnitVolumeScoringMeshes", this);
+  fUseUnitVolumeScoringMeshesCmd->SetGuidance("Visualize and save energy deposition in unit volumes on/off");
+  fUseUnitVolumeScoringMeshesCmd->SetDefaultValue(useUnitVolumeScoringMeshesCmdDefaultValue);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -142,39 +143,41 @@ DetectorMessenger::~DetectorMessenger() {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void DetectorMessenger::SetNewValue(G4UIcommand* command, G4String newValue) {
-  if (command == fSetGapCmd){
-	  fDetectorConstruction->SetDetectorGap(fSetGapCmd->GetNewDoubleValue(newValue));
-  } else if (command == fSetCrystalSizeCmd){
-	  fDetectorConstruction->SetCrystalSize(fSetCrystalSizeCmd->GetNew3VectorValue(newValue));
-  } else if (command==fSetCrystalMaterialCmd){
+void DetectorMessenger::SetNewValue(G4UIcommand *command, G4String newValue) {
+  if (command == fSetGapCmd) {
+    fDetectorConstruction->SetDetectorGap(fSetGapCmd->GetNewDoubleValue(newValue));
+  } else if (command == fSetCrystalSizeCmd) {
+    fDetectorConstruction->SetCrystalSize(fSetCrystalSizeCmd->GetNew3VectorValue(newValue));
+  } else if (command == fSetCrystalMaterialCmd) {
     fDetectorConstruction->SetCrystalMaterial(newValue);
-  } else if (command==fSetOuterCrystalMaterialCmd){
+  } else if (command == fSetOuterCrystalMaterialCmd) {
     fDetectorConstruction->SetOuterCrystalMaterial(newValue);
-  } else if (command==fSetWrapMaterialCmd){
+  } else if (command == fSetWrapMaterialCmd) {
     fDetectorConstruction->SetWrapMaterial(newValue);
-  } else if (command==fSetCrystalNumberXCmd){
+  } else if (command == fSetCrystalNumberXCmd) {
     fDetectorConstruction->SetCrystalNumberX(fSetCrystalNumberXCmd->GetNewIntValue(newValue));
-  } else if (command==fSetCrystalNumberYCmd){
+  } else if (command == fSetCrystalNumberYCmd) {
     fDetectorConstruction->SetCrystalNumberY(fSetCrystalNumberYCmd->GetNewIntValue(newValue));
-  } else if (command == fSetDetectorTypeCmd){
-  	fDetectorConstruction->SetDetectorType(newValue);
-  } else if (command == fSetGreaseThicknessCmd){
-  	fDetectorConstruction->SetGreaseThickness(fSetGreaseThicknessCmd->GetNewDoubleValue(newValue));
-  } else if (command == fSetWrapThicknessCmd){
+  } else if (command == fSetDetectorTypeCmd) {
+    fDetectorConstruction->SetDetectorType(newValue);
+  } else if (command == fSetGreaseThicknessCmd) {
+    fDetectorConstruction->SetGreaseThickness(fSetGreaseThicknessCmd->GetNewDoubleValue(newValue));
+  } else if (command == fSetWrapThicknessCmd) {
     fDetectorConstruction->SetWrapThickness(fSetGreaseThicknessCmd->GetNewDoubleValue(newValue));
-  } else if (command == fSetGreaseTypeCmd){
-  	fDetectorConstruction->SetGreaseType(newValue);
-  } else if (command == fSetReflectiveShieldCmd){
-  	fDetectorConstruction->SetShieldReflective(fSetReflectiveShieldCmd->GetNewBoolValue(newValue));
-  } else if (command == fSaveEnergyDepositionCmd){
-  	fDetectorConstruction->SetSaveEnergyDeposition(fSaveEnergyDepositionCmd->GetNewBoolValue(newValue));
-  } else if (command == fSaveUnitEnergyDepositionCmd){
-    fDetectorConstruction->SetUseUnitVolumeScoringMesh(fSaveUnitEnergyDepositionCmd->GetNewBoolValue(newValue));
-  } else if (command == fVisualizeEnergyDepositionCmd){
-    fDetectorConstruction->SetUseGlobalScoringMesh(fVisualizeEnergyDepositionCmd->GetNewBoolValue(newValue));
-  } else if (command == fSaveEnergyWorldEscapeCommand){
-    fDetectorConstruction->SetSaveWorldEscapeEnergy(fSaveEnergyWorldEscapeCommand->ConvertToBool(newValue));
+  } else if (command == fSetGreaseTypeCmd) {
+    fDetectorConstruction->SetGreaseType(newValue);
+  } else if (command == fSetReflectiveShieldCmd) {
+    fDetectorConstruction->SetShieldReflective(fSetReflectiveShieldCmd->GetNewBoolValue(newValue));
+  } else if (command == fUsePrimitiveScorerCmd) {
+    fDetectorConstruction->SetUsePrimitiveScorer(fUsePrimitiveScorerCmd->GetNewBoolValue(newValue));
+  } else if (command == fUseScoringMeshesCmd) {
+    fDetectorConstruction->SetUseGlobalScoringMesh(fUseScoringMeshesCmd->GetNewBoolValue(newValue));
+  } else if (command == fSaveEnergyWorldEscapeCmd) {
+    fDetectorConstruction->SetSaveWorldEscapeEnergy(fSaveEnergyWorldEscapeCmd->GetNewBoolValue(newValue));
+  } else if (command == fSaveTimeOfFlightCmd) {
+    fDetectorConstruction->SetSaveTimeOfFlight(fSaveTimeOfFlightCmd->GetNewBoolValue(newValue));
+  } else if (command == fUseUnitVolumeScoringMeshesCmd) {
+    fDetectorConstruction->SetUseUnitVolumeScoringMesh(fUseUnitVolumeScoringMeshesCmd->GetNewBoolValue(newValue));
   }
 }
 

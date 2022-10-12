@@ -32,27 +32,29 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#include "MyRunAction.hh"
+#include "G4Utils.hh"
+#include "DetectorConstruction.hh"
+#include "HistoManager.hh"
+
 #include <CLHEP/Random/Random.h>
-#include <DetectorConstruction.hh>
 #include <G4DefaultLinearColorMap.hh>
 #include <G4ios.hh>
 #include <G4ScoringManager.hh>
 #include <G4String.hh>
 #include <G4Types.hh>
-#include <G4Utils.hh>
-#include <MyRunAction.hh>
-
 #include <G4VScoreColorMap.hh>
 #include <Randomize.hh>
 #include <RtypesCore.h>
-#include <algorithm>
-#include <ctime>
-#include <iostream>
 #include <G4RunManager.hh>
+#include <G4AnalysisManager.hh>
 
 using CLHEP::Hep3Vector;
 // For analysis manager
-#include <g4analysis.hh>
+// #include <g4analysis.hh>
+#include <algorithm>
+#include <ctime>
+#include <iostream>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -75,16 +77,16 @@ void MyRunAction::BeginOfRunAction(const G4Run* aRun)
 
   // Create the Analysis Manager
   // https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/BackupVersions/V10.7/html/Analysis/managers.html
-  G4AnalysisManager* analysisManager = G4Analysis::ManagerInstance("root");
-  analysisManager->SetVerboseLevel(1);
-  // Open an output file
-  G4String tofFileName = "./output/tof-";
-  tofFileName += std::to_string(G4Utils::getNumberOfEvents());
-  tofFileName += "-events.root";
-  analysisManager->OpenFile(tofFileName);
+  if (G4Utils::getDetectorConstruction()->GetSaveTimeOfFlight()) {
+    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+    analysisManager->SetVerboseLevel(1);
+    // Open an output file
+    G4String tofFileName = G4Utils::getOutputFileName("tof");
+    analysisManager->OpenFile(tofFileName);
 
-  // Create ntuple for storing first 100 TOF events in Analysis Manager
-  G4Utils::getInstance()->prepareTOFNtuple();
+    // Create global ntuple for storing first 100 TOF events in Analysis Manager
+    G4Utils::getInstance()->prepareTOFNtuple(-1);
+  }
 
   // PS:
   // This method is invoked before entering the event loop (BeamOn?).
@@ -123,26 +125,26 @@ void MyRunAction::EndOfRunAction(const G4Run* aRun)
     Double_t maxPMTMeshValue = G4Utils::getProjectionZMaximumQuantityFromMesh(MultiFunctionalDetectorNames::PMTS_MESH, HitsCollectionNames::ENE_DEP_PMTS_MESH);
 
     // Assign this value to the 1st bin of the PMT mesh
-    G4VScoreColorMap* allCrystalsColorMap = new G4DefaultLinearColorMap("allCrystalsColorMap");
-    allCrystalsColorMap->SetMinMax(0, std::max(maxCrystalMeshValue, maxPMTMeshValue));
-    allCrystalsColorMap->SetFloatingMinMax(0);
+    G4VScoreColorMap* globalColorMap = new G4DefaultLinearColorMap("globalColorMap");
+    globalColorMap->SetFloatingMinMax(false);
+    globalColorMap->SetMinMax(0, std::max(maxCrystalMeshValue, maxPMTMeshValue));
 
     G4ScoringManager* scoringManager = G4ScoringManager::GetScoringManager();
-    scoringManager->RegisterScoreColorMap(allCrystalsColorMap);
+    scoringManager->RegisterScoreColorMap(globalColorMap);
   }
 
   // Register color map for individual crystals scoring meshes
   if (G4Utils::getDetectorConstruction()->GetUseUnitVolumeScoringMesh()){
-    Int_t crystalCenterNumber = G4Utils::getNCrystals()/2 + 1;
+    Int_t crystalCenterNumber = G4Utils::getNCrystals()/2 + 0.5;
     G4String centerMeshName = MultiFunctionalDetectorNames::getUnitVolumeMeshName(crystalCenterNumber);
 
     G4String centerPrScoName = HitsCollectionNames::getUnitVolumeHCName(crystalCenterNumber);
     // G4String centerPrScoName = HitsCollectionNames::ENE_DEP_CRYSTAL_MESH;
-    Double_t maxCenterCrystalZMeshValue = G4Utils::getProjectionZMaximumQuantityFromMesh(centerMeshName, centerPrScoName);
+    Double_t maxCenterCrystalZMeshValue = G4Utils::getMaximumQuantityFromMesh(centerMeshName, centerPrScoName);
 
     G4VScoreColorMap* centerCrystalColorMap = new G4DefaultLinearColorMap("centerCrystalColorMap");
+    centerCrystalColorMap->SetFloatingMinMax(false);
     centerCrystalColorMap->SetMinMax(0, maxCenterCrystalZMeshValue);
-    centerCrystalColorMap->SetFloatingMinMax(0);
 
     G4ScoringManager* scoringManager = G4ScoringManager::GetScoringManager();
     scoringManager->RegisterScoreColorMap(centerCrystalColorMap);

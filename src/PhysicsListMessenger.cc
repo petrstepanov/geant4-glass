@@ -44,11 +44,21 @@
 // 
 
 #include "PhysicsListMessenger.hh"
+#include "ActionInitialization.hh"
 #include "MyConstants.hh"
+
 #include <G4PhysListFactory.hh>
+#include <G4OpticalParameters.hh>
 #include <G4OpticalPhysics.hh>
 #include <G4RunManager.hh>
 #include <G4ParallelWorldPhysics.hh>
+#include <G4Tokenizer.hh>
+
+#include <iostream>
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+const G4String PhysicsListMessenger::physicsListCmdDefaultValue = "FTFP_BERT";
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -57,31 +67,48 @@ PhysicsListMessenger::PhysicsListMessenger(G4RunManager *runManager) : G4UImesse
   fRunManager = runManager;
 
   // Instantiate commands
-  fSelectListCmd = new G4UIcmdWithAString("/physics/selectList", this);
+  fSelectListCmd = new G4UIcommand("/physics/selectList", this);
   fSelectListCmd->SetGuidance("Add modular physics list.");
   fSelectListCmd->AvailableForStates(G4State_PreInit);
+  // fSelectListCmd->SetDefaultValue(physicsListCmdDefaultValue);
 
-  fAddOpticalCmd = new G4UIcmdWithoutParameter("/physics/addOptical", this);
-  fAddOpticalCmd->SetGuidance("Available Physics Lists");
-  fAddOpticalCmd->AvailableForStates(G4State_PreInit);
+  fSelectListCmd->SetGuidance("Define modular physics list");
+  fSelectListCmd->SetGuidance("   [usage] /physics/selectList listName withOptical");
+  fSelectListCmd->SetGuidance("      listName (string) : physics list name FTFP_BERT, QGSP_BERT, QGSC_BERT_EMZ, ...");
+  fSelectListCmd->SetGuidance("      withOptical  (string) : add optical physics");
+
+  G4UIparameter *param = nullptr;
+  param = new G4UIparameter("listName", 's', false);
+  fSelectListCmd->SetParameter(param);
+  param = new G4UIparameter("withOptical", 's', true /* omittable */);
+  param->SetParameterCandidates("withOptical");
+  fSelectListCmd->SetParameter(param);
+
+//  fAddOpticalCmd = new G4UIcmdWithoutParameter("/physics/addOptical", this);
+//  fAddOpticalCmd->SetGuidance("Available Physics Lists");
+//  fAddOpticalCmd->AvailableForStates(G4State_PreInit);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PhysicsListMessenger::~PhysicsListMessenger() {
   delete fSelectListCmd;
-  delete fAddOpticalCmd;
+//  delete fAddOpticalCmd;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void PhysicsListMessenger::SetNewValue(G4UIcommand* command, G4String value) {
-  if( command == fSelectListCmd ) {
+void PhysicsListMessenger::SetNewValue(G4UIcommand *command, G4String value) {
+  if (command == fSelectListCmd) {
+    G4Tokenizer next(value);
+    G4String physicsListName = next();
+    G4String withOptical = next();
+
     // Initialize physics list
-    G4PhysListFactory* physListFactory = new G4PhysListFactory();
-    if (!physListFactory->IsReferencePhysList(value)) {
-      std::cout << "Physics list \"" << value << "\" not found."<< std::endl;
-      value = "FTFP_BERT";
+    G4PhysListFactory *physListFactory = new G4PhysListFactory();
+    if (!physListFactory->IsReferencePhysList(physicsListName)) {
+      std::cout << "Physics list \"" << physicsListName << "\" not found." << std::endl;
+      value = physicsListCmdDefaultValue;
     }
     fPhysicsList = physListFactory->GetReferencePhysList(value);
 
@@ -89,35 +116,41 @@ void PhysicsListMessenger::SetNewValue(G4UIcommand* command, G4String value) {
     // https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/Detector/parallelWorld.html?highlight=registerparallelworld#layered-mass-geometry
     // fPhysicsList->RegisterPhysics(new G4ParallelWorldPhysics(MyConstants::singleParallelWorldName));
 
+    // Initialize optical
+    if (withOptical == "withOptical") {
+      // Add optical physics to physics
+      G4OpticalPhysics *opticalPhysics = new G4OpticalPhysics();
+
+      // Setting the decay time profile of the WLS process to "exponential" or
+      // "delta" - like (default)
+      // http://publications.rwth-aachen.de/record/667646/files/667646.pdf
+      // opticalPhysics->SetWLSTimeProfile("exponential");
+
+      // deactivating ( false ) or activating ( true , default ) the postponed
+      // processing of mother particles if optical photons are created by
+      // http://publications.rwth-aachen.de/record/667646/files/667646.pdf
+      auto opticalParams = G4OpticalParameters::Instance(); // Geant4 v.11
+      opticalParams->SetCerenkovTrackSecondariesFirst(false);
+      opticalParams->SetScintTrackSecondariesFirst(false);
+
+      // option to allow for G4ScintillationTrackInformation
+      // to be attached to a scintillation photon's track
+      // opticalPhysics->SetScintillationTrackInfo(true);
+
+      // setting the rise time of the scintillation process and the WLS process finite values ( true ) or zero ( false , default )
+      opticalParams->SetScintFiniteRiseTime(true);
+
+      // TODO?: specify Bricks Constant, p.187
+      // http://publications.rwth-aachen.de/record/667646/files/667646.pdf
+
+      // Register Physics List
+      fPhysicsList->RegisterPhysics(opticalPhysics);
+    }
+
     fRunManager->SetUserInitialization(fPhysicsList);
-  } else if( command == fAddOpticalCmd ) {
-    // Add optical physics to physics
-    G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
 
-    // Setting the decay time profile of the WLS process to "exponential" or
-    // "delta" - like (default)
-    // http://publications.rwth-aachen.de/record/667646/files/667646.pdf
-    // opticalPhysics->SetWLSTimeProfile("exponential");
-
-    // deactivating ( false ) or activating ( true , default ) the postponed
-    // processing of mother particles if optical photons are created by
-    // http://publications.rwth-aachen.de/record/667646/files/667646.pdf
-    opticalPhysics->SetCerenkovTrackSecondariesFirst(false);
-    opticalPhysics->SetScintillationTrackSecondariesFirst(false);
-
-    // option to allow for G4ScintillationTrackInformation
-    // to be attached to a scintillation photon's track
-    // opticalPhysics->SetScintillationTrackInfo(true);
-
-
-    // setting the rise time of the scintillation process and the WLS process finite values ( true ) or zero ( false , default )
-    opticalPhysics->SetFiniteRiseTime(true);
-
-    // TODO?: specify Bricks Constant, p.187
-    // http://publications.rwth-aachen.de/record/667646/files/667646.pdf
-
-    // Register Physics List
-    fPhysicsList->RegisterPhysics(opticalPhysics);
+    // Deferred instantiate ActionInitialization
+    fRunManager->SetUserInitialization(new ActionInitialization());
   }
 }
 

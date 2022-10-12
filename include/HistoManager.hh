@@ -81,7 +81,6 @@ public:
   // HistoManagerMessenger methods
   void setFileNamePattern(G4String fileNamePattern);
   G4String getFileNamePattern();
-  G4String getFileName();
 
   // Calls from optical Stepping and Stacking actions
   void SaveProducedPhoton(const G4Track* track, G4int copyNumber);
@@ -140,6 +139,10 @@ private:
   G4int fAllScintPhotoElectrons;              // Numbers per event (no wavelength data) from all crystals
   G4int fAllCherePhotoElectrons;              // Numbers per event (no wavelength data) from all crystals
 
+  // For building the optical response from emission from unit volume centers
+  // These need to be of a float type because we are shooting a single op per event
+  // If shooting 10e6 per event Farm runs out of 512 Mb memory - not good.
+  G4double fPhotoElectronsDouble;                   // Numbers per event (no wavelength data)
 
   // Event-independent cumulative histograms with optical data
   // Photon spectra (with wavelength) produced in each crystal

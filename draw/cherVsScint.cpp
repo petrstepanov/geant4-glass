@@ -90,7 +90,7 @@ void plotEmittedVsDetected(const char* filename){
   TCanvas* canvas = new TCanvas();
   ((TRootCanvas*)canvas->GetCanvasImp())->ShowMenuBar(kFALSE);
   canvas->Divide(1,2);
-  canvas->SetWindowSize(canvas->GetWw(), canvas->GetWw());  // Make square canvasw
+  canvas->SetWindowSize(canvas->GetWw()*1.5, canvas->GetWw()*1.5);  // Make square canvasw
 
   // Add overlay pad
   addOverlayPad(canvas, 2, 2);
@@ -166,7 +166,7 @@ void plotEmittedVsDetected(const char* filename){
 
   // Add joint title to the canvas
   TString title = makeTitle(file);
-  addCanvasTitle(canvas, title);
+  addMultiCanvasTitle(canvas, title);
 
   // Save canvas to disk
   TString outputFilename = removeFileExtension(filename);
@@ -181,7 +181,7 @@ void plotPEHists(const char* filename){
   Int_t maxPE = getBranchMaximum(tree, "pe")*0.3;
 
   // Prepare histograms for filling
-  Int_t nbins = 200;
+  Int_t nbins = maxPE+1;
   TH1* peHist = new TH1I("photo_electrons", "All PE", nbins, 0, maxPE);
   TH1* peScintHist = new TH1I("photo_electrons_scint", "Scintillation PE", nbins, 0, maxPE);
   TH1* peChereHist = new TH1I("photo_electrons_chere", "Cherenkov PE", nbins, 0, maxPE);
@@ -209,7 +209,7 @@ void plotPEHists(const char* filename){
   hs->SetMaximum(hs->GetMaximum()*1.1); // Rescale Y axis to see the label
 
   TCanvas* canvas = new TCanvas();
-  canvas->SetWindowSize(canvas->GetWw(), canvas->GetWw()*0.5);
+  canvas->SetWindowSize(canvas->GetWw()*1.5, canvas->GetWw()*1.5*0.5);
   canvas->SetGrid();
 
   hs->Draw("nostack");
@@ -226,7 +226,7 @@ void plotPEHists(const char* filename){
 
   // Add joint title to the canvas
   TString title = makeTitle(file);
-  addCanvasTitle(canvas, title);
+  addMultiCanvasTitle(canvas, title);
 
   // Weird but it requires to be Updated
   canvas->Modified();
@@ -344,7 +344,7 @@ std::vector<Double_t> plotCherVsScint(const char* fileName){
 
   // Add joint title to the canvas
   TString title = makeTitle(file);
-  addCanvasTitle(canvas, title);
+  addMultiCanvasTitle(canvas, title);
 
   // Save canvas to disk
   TString outputFilename = removeFileExtension(fileName);

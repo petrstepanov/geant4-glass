@@ -50,7 +50,11 @@ MyVisCommands::MyVisCommands() : G4VVisCommand() {
 
   // Instantiate Print EPS command
   fPrintEPScommand = new G4UIcommand("/myvis/ogl/printEPS", this);
-  fPrintEPScommand->SetGuidance("Prnt EPS file.");
+  fPrintEPScommand->SetGuidance("Print EPS file.");
+
+  // Instantiate Print EPS command
+  fPrintPNGcommand = new G4UIcommand("/myvis/ogl/printPNG", this);
+  fPrintPNGcommand->SetGuidance("Print PNG file.");
 }
 
 MyVisCommands::~MyVisCommands() {
@@ -119,33 +123,35 @@ void MyVisCommands::SetNewValue(G4UIcommand* cmd, G4String string) {
     // Write total energy from GPS
     G4double energyTotalGPS = G4Utils::getGPSMonoEnergy()*G4Utils::getNumberOfEvents();
     EnergyValueUnit energyTotalGPSEVU = G4Utils::formatEnergy(energyTotalGPS);
-    buffer << "Total incident energy:  " << energyTotalGPSEVU.value << " " << energyTotalGPSEVU.unit;
-    drawText2D(buffer.str());
-    buffer.str( std::string() ); buffer.clear();
+    // buffer << "Total incident energy:  " << energyTotalGPSEVU.value << " " << energyTotalGPSEVU.unit;
+    // drawText2D(buffer.str());
+    // buffer.str( std::string() ); buffer.clear();
 
     // Write values registered by mesh
-    if (G4Utils::getDetectorConstruction()->GetSaveEnergyDeposition()){
+    if (G4Utils::getDetectorConstruction()->GetUsePrimitiveScorer()){
       // Write total energy in crystals
       G4double energyTotalCrystalsMesh = G4Utils::getTotalQuantityFromMesh(MultiFunctionalDetectorNames::CRYSTALS_MESH, HitsCollectionNames::ENE_DEP_CRYSTALS_MESH);
       EnergyValueUnit evuC = G4Utils::formatEnergy(energyTotalCrystalsMesh);
-      buffer << "Deposited in crystals:  " << evuC.value << " " << evuC.unit << " (" << energyTotalCrystalsMesh/energyTotalGPS*100 << " %)";
+      // buffer << "Deposited in crystals:  " << evuC.value << " " << evuC.unit << " (" << energyTotalCrystalsMesh/energyTotalGPS*100 << " %)";
+      buffer << "Deposited in crystals:  " << std::setprecision(2) << energyTotalCrystalsMesh/energyTotalGPS*100 << " %";
       drawText2D(buffer.str());
       buffer.str( std::string() ); buffer.clear();
     }
 
     // Write values registered by mesh
     if (G4Utils::getDetectorConstruction()->GetUseGlobalScoringMesh()){
-      // Write total energy in crystals
-      G4double energyTotalCrystalsMesh = G4Utils::getTotalQuantityFromMesh(MultiFunctionalDetectorNames::CRYSTALS_MESH, HitsCollectionNames::ENE_DEP_CRYSTALS_MESH);
-      EnergyValueUnit evuC = G4Utils::formatEnergy(energyTotalCrystalsMesh);
-      buffer << "Deposited in crystals:  " << evuC.value << " " << evuC.unit << " (" << energyTotalCrystalsMesh/energyTotalGPS*100 << " %)";
-      drawText2D(buffer.str());
-      buffer.str( std::string() ); buffer.clear();
+//      // Write total energy in crystals
+//      G4double energyTotalCrystalsMesh = G4Utils::getTotalQuantityFromMesh(MultiFunctionalDetectorNames::CRYSTALS_MESH, HitsCollectionNames::ENE_DEP_CRYSTALS_MESH);
+//      EnergyValueUnit evuC = G4Utils::formatEnergy(energyTotalCrystalsMesh);
+//      buffer << "Deposited in crystals:  " << evuC.value << " " << evuC.unit << " (" << energyTotalCrystalsMesh/energyTotalGPS*100 << " %)";
+//      drawText2D(buffer.str());
+//      buffer.str( std::string() ); buffer.clear();
 
       // Write total energy in detectors
       G4double energyTotalDetMesh = G4Utils::getTotalQuantityFromMesh(MultiFunctionalDetectorNames::PMTS_MESH, HitsCollectionNames::ENE_DEP_PMTS_MESH);
       EnergyValueUnit evuD = G4Utils::formatEnergy(energyTotalDetMesh);
-      buffer << "Deposited in detectors: " << evuD.value << " " << evuD.unit << " (" << energyTotalDetMesh/energyTotalGPS*100 << " %)";
+      // buffer << "Deposited in detectors: " << evuD.value << " " << evuD.unit << " (" << energyTotalDetMesh/energyTotalGPS*100 << " %)";
+      buffer << "Deposited in detectors: " << std::setprecision(2) << energyTotalDetMesh/energyTotalGPS*100 << " %";
       drawText2D(buffer.str());
       buffer.str( std::string() ); buffer.clear();
     }
@@ -154,17 +160,26 @@ void MyVisCommands::SetNewValue(G4UIcommand* cmd, G4String string) {
     if (G4Utils::getDetectorConstruction()->GetSaveWorldEscapeEnergy()){
       G4double energyEscapedWorld = HistoManager::getInstance()->getTotalWorldOutEnergy();
       EnergyValueUnit evu = G4Utils::formatEnergy(energyEscapedWorld);
-      buffer <<  "Escaped the world:      " << evu.value << " " << evu.unit << " (" << energyEscapedWorld/energyTotalGPS*100 << " %)";
+      // buffer <<  "Escaped the world:      " << evu.value << " " << evu.unit << " (" << energyEscapedWorld/energyTotalGPS*100 << " %)";
+      buffer <<  "Escaped the world:      " << std::setprecision(2) << energyEscapedWorld/energyTotalGPS*100 << " %";
       drawText2D(buffer.str());
       buffer.str( std::string() ); buffer.clear();
     }
   }
   else if (cmd==fPrintEPScommand){
-    G4String fileName = HistoManager::getInstance()->getFileName();
+    G4String fileName = G4Utils::getOutputFileName();
     G4VViewer* currentViewer = fpVisManager->GetCurrentViewer();
     G4OpenGLViewer* pOGLViewer = dynamic_cast<G4OpenGLViewer*>(currentViewer);
     G4Utils::replaceSubstring(fileName, ".root", ".eps");
     pOGLViewer->setExportImageFormat("eps",true);
+    pOGLViewer->exportImage(fileName);
+  }
+  else if (cmd==fPrintPNGcommand){
+    G4String fileName = G4Utils::getOutputFileName();
+    G4VViewer* currentViewer = fpVisManager->GetCurrentViewer();
+    G4OpenGLViewer* pOGLViewer = dynamic_cast<G4OpenGLViewer*>(currentViewer);
+    G4Utils::replaceSubstring(fileName, ".root", ".png");
+    pOGLViewer->setExportImageFormat("png",true);
     pOGLViewer->exportImage(fileName);
   }
 }
@@ -190,29 +205,46 @@ void MyVisCommands::drawText2D(G4String text){
 
   // G4VViewer* currentViewer = fpVisManager->GetCurrentViewer();
 
-  G4int textSize = 14;
+  const G4double textSize = 7; // text height actually, in px
+  const G4double charWidth = textSize * 0.63;
 
-  G4double lineHeight = textSize/200.;
+  const G4double lineHeight = textSize*1.5;
 
-  G4double textY = 0.9-lineNumber*lineHeight;
+  const G4double paddingLeft = textSize*2.5;
+  const G4double paddingTop = textSize*2.5;
+
+  const G4double viewerHeight = fpVisManager->GetCurrentViewer()->GetViewParameters().GetWindowSizeHintY();
+  const G4double viewerWidth = fpVisManager->GetCurrentViewer()->GetViewParameters().GetWindowSizeHintX();
 
   // fpVisManager->BeginDraw2D();
 
-  // Draw background
+  // Draw text background
+
+
+  // Here coordinate system is weird, (0,0) is screen center, (-1,-1) is top left corner
+  // Pixel scale is twice smaller than actual, need to multiply everything by 2
+
+  G4double yPx = paddingTop + lineNumber*lineHeight;
   for(size_t i = 0; i <= text.length(); i++){
-    G4Square* shadow = new G4Square(G4Point3D(-0.9 + i*lineHeight*textSize/33., textY+lineHeight/3, 0));
-    shadow->SetScreenSize(textSize*1.5);
+    G4double shadowXPx = paddingLeft + charWidth*i;
+    G4Square* shadow = new G4Square(G4Point3D(-1. + shadowXPx/viewerWidth*4., 1. - yPx/viewerHeight*4., 0));  // Due to coordinate system need to multiply everything by 4?? why dont understand - may be retina issue??
+    shadow->SetScreenSize(lineHeight*2.);
     shadow->SetFillStyle(G4VMarker::FillStyle::filled);
-    G4VisAttributes att(G4Colour::Black());
+    G4Colour bgColor = fpVisManager->GetCurrentViewer()->GetViewParameters().GetBackgroundColour();
+    // G4Colour bgColor = G4Colour::Red();
+    G4VisAttributes att(bgColor);
     shadow->SetVisAttributes(&att);
     fpVisManager->Draw2D(*shadow);
   }
 
   // Draw text
-  G4Text t(text, G4Point3D(-0.9, textY, 0.1));
-  t.SetScreenSize(textSize);
-  G4VisAttributes attText(G4Colour::White());
-  t.SetVisAttributes(&attText);
+  // G4Text t(text, G4Point3D(paddingLeft/viewerWidth, yPx/viewerHeight, 0));
+  G4Text t(text, G4Point3D(-1. + paddingLeft/viewerWidth*4., 1. - (yPx + (lineHeight-textSize)/2.)/viewerHeight*4., 0));
+  t.SetScreenSize(textSize*2.); // Due to coordinate system need to multiply everything to 2
+  G4Colour textColor = fpVisManager->GetCurrentViewer()->GetViewParameters().GetBackgroundColour()==G4Colour::Black() ? G4Colour::White() : G4Colour::Black();
+  // G4Colour textColor = G4Colour::Green();
+  G4VisAttributes att(textColor);
+  t.SetVisAttributes(&att);
   fpVisManager->Draw2D(t);
 
   // fpVisManager->EndDraw2D();

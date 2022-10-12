@@ -19,7 +19,7 @@
 #pragma GCC diagnostic pop
 
 enum class BaseMaterialType {
-  PWO, SciGlass, CSGlass, Dummy
+  PWO, SciGlass, SciGlassLight, CSGlass, Dummy
 };
 
 class Materials {

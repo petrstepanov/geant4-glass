@@ -1,3 +1,5 @@
+#include <CanvasHelper.h>
+
 #include <TApplication.h>
 #include <TGClient.h>
 #include <TGInputDialog.h>
@@ -6,13 +8,12 @@
 #include <TStyle.h>
 #include <THStack.h>
 
-#include "include/CanvasHelper.h"
 #include "include/utilities.h"
 
 Int_t nPadsX = 1;
 Int_t nPadsY = 2;
 
-void plotTOF(TTree* tree, Double_t maxTime, Double_t integrationWindowWidth, TVirtualPad* canvas, Int_t fillStyle){
+void plotTOF(TTree* tree, Double_t maxTime, Double_t integrationWindowWidth, TVirtualPad* canvas, Int_t fillStyle, Bool_t grayscale = false){
 	static Int_t histNumber = 0;
 	const Int_t nBins = maxTime/integrationWindowWidth;
 
@@ -48,19 +49,20 @@ void plotTOF(TTree* tree, Double_t maxTime, Double_t integrationWindowWidth, TVi
 	}
 
 	THStack* hs = new THStack("hs", "");
-  histScint->SetLineColor(EColor::kMagenta);
-	histScint->SetFillColor(EColor::kMagenta);
-	histScint->SetFillStyle(fillStyle);
-	hs->Add(histScint);
 
-	histChere->SetLineColor(EColor::kBlue);
-	histChere->SetFillColor(EColor::kBlue);
-	histChere->SetFillStyle(fillStyle);
-	hs->Add(histChere);
+  histChere->SetLineColor(grayscale ? EColor::kGray+1 : EColor::kBlue);
+  histChere->SetFillColor(grayscale ? EColor::kGray+1 : EColor::kBlue);
+  if (!grayscale) histChere->SetFillStyle(fillStyle);
+  hs->Add(histChere);
+
+  histScint->SetLineColor(grayscale ? EColor::kBlack : EColor::kMagenta);
+	histScint->SetFillColor(grayscale ? EColor::kBlack : EColor::kMagenta);
+	if (!grayscale) histScint->SetFillStyle(fillStyle);
+	hs->Add(histScint);
 
 	// TCanvas* canvas = new TCanvas();
 	canvas->SetGrid();
-	canvas->SetLogy();
+	// canvas->SetLogy();
 
 	hs->Draw("nostack");
   hs->GetXaxis()->SetTitle("Time, ns");
@@ -84,7 +86,7 @@ void tof(){
 	TFile* file = openFile(fileName);
 
 	// Instantiate CanvasHelper that will tweak canvas design
-	CanvasHelper::GetInstance();
+	CanvasHelper::getInstance();
 
 	// Enter number of the events to analyze
 	// Int_t nKeys = file->GetNkeys();
@@ -102,54 +104,47 @@ void tof(){
 	// if (maxEvent < 0 || maxEvent > nKeys - 1) return;
 
   // Input integration window width
+//  {
+//  TString text = TString::Format("Input integration window width, ns");
+//    TString defaultValue = TString::Format("%.1f", 0.1);
+//    new TGInputDialog(gClient->GetRoot(), NULL, text, defaultValue, returnString);
+//  }
+//  Double_t integationWindowWidth = atof(returnString);
+
+  // Input event number
   {
-  TString text = TString::Format("Input integration window width, ns");
-    TString defaultValue = TString::Format("%.1f", 0.1);
+  TString text = TString::Format("Input event number. Leave empty for all events.");
+    TString defaultValue = TString::Format("%d", 1);
     new TGInputDialog(gClient->GetRoot(), NULL, text, defaultValue, returnString);
   }
-  Double_t integationWindowWidth = atof(returnString);
 
 	// Plot TOF for all events saved in the Tree
-	TTree* treeAllEvents = getTree(file, "tof");
-	Double_t maxTime = getBranchMaximum(treeAllEvents, "globalTime");
+  TString treeName = TString::Format("tof%s", returnString);
+	TTree* treeAllEvents = getTree(file, treeName);
 
-	// Plot TOF for 100ps window
-	{
-    TCanvas* canvas = new TCanvas();
-    canvas->SetWindowSize(1440, 800);
-    canvas->Divide(1, 2);
-
-    plotTOF(treeAllEvents, maxTime,  integationWindowWidth, canvas->cd(1), 1001);
-    plotTOF(treeAllEvents, 10,  integationWindowWidth, canvas->cd(2), EFillStyle::kFDotted2);
-
-    addCanvasTitle(canvas, "Photon Time of Flight", "3 GeV mu-. 50 events. Cube10. Integration window 100 ps.");
-
-    // Tweak canvas look (remove relative sizing)
-    CanvasHelper::GetInstance()->tweakCanvas(canvas);
-
-    // Save canvas
-    TString outFileName = fileName;
-    outFileName.ReplaceAll(".root", "-100ps");
-    saveCanvasToDisk(canvas, outFileName);
-	}
-
-	// Plot TOF for 200 ns window
+	// Plot TOF for 400 ps window
   {
     TCanvas* canvas = new TCanvas();
     canvas->SetWindowSize(1440, 800);
-    canvas->Divide(1, 2);
+    canvas->Divide(1, 3);
 
-    plotTOF(treeAllEvents, maxTime,  200, canvas->cd(1), 1001);
-    plotTOF(treeAllEvents, 10,  200,      canvas->cd(2), EFillStyle::kFDotted2);
+    Double_t samplingWindow = 0.4; // [ns]
+//    Double_t maxTime = getBranchMaximum(treeAllEvents, "globalTime");
+//    plotTOF(treeAllEvents, maxTime,  integationWindowWidth, canvas->cd(1), 1001);
+    plotTOF(treeAllEvents, 400,  samplingWindow, canvas->cd(1), 1001);
+    plotTOF(treeAllEvents, 10,  samplingWindow, canvas->cd(2), EFillStyle::kFDotted2);
+    plotTOF(treeAllEvents, 10, 0.01, canvas->cd(3), EFillStyle::kFSolid, kTRUE);
 
-    addCanvasTitle(canvas, "Photon Time of Flight", "3 GeV mu-. 50 events. Cube10. Integration window 200 ns.");
+    TString title = TString::Format("3 GeV mu-. Sampling window %d ps.", (int)(samplingWindow*1000));
+    addMultiCanvasTitle(canvas, "Photon Time of Flight - Oscilloscope Output", title.Data());
 
     // Tweak canvas look (remove relative sizing)
-    CanvasHelper::GetInstance()->tweakCanvas(canvas);
+    CanvasHelper::getInstance()->addCanvas(canvas);
 
     // Save canvas
     TString outFileName = fileName;
-    outFileName.ReplaceAll(".root", "-200ns");
+    TString suffix = TString::Format("%dps", (int)(samplingWindow*1000));
+    outFileName.ReplaceAll(".root", suffix.Data());
     saveCanvasToDisk(canvas, outFileName);
   }
 

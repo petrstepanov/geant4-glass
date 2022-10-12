@@ -21,8 +21,8 @@
 #include <TSystem.h>
 #include <TTree.h>
 #include <TH1.h>
-#include <RooConstVar.h>
 #include <TH2.h>
+#include <RooConstVar.h>
 #include <TVector3.h>
 #include <TGraphErrors.h>
 #include <TF1.h>
@@ -33,8 +33,11 @@
 #include <limits>
 #include <TClass.h>
 #include <functional>
-/* BEGIN Ho San Code */
 
+namespace RoundMe {
+	int getFirstDigit();
+	std::pair<double, double> valueError(const double value, const double error);
+}
 
 double nmToMeV(double nm);
 
@@ -49,7 +52,7 @@ void utility();
 // END Ho San Code
 
 void msgBoxInfo(const char* title, const char* text);
-
+void msgBoxError(const char* title, const char* text);
 Int_t msgBoxQuestion(const char* title, const char* text);
 
 enum class Alignment {
@@ -105,7 +108,7 @@ TTree* getTree(TFile* file, const char* treeName);
 
 TCanvas* getCanvas();
 
-void addCanvasTitle(TCanvas* canvas, const char* title, const char* subtitle = 0);
+void addMultiCanvasTitle(TCanvas* canvas, const char* title, const char* subtitle = 0);
 
 void printParameters(TF1* func);
 
@@ -196,6 +199,8 @@ Int_t getNumberOfEvents(TFile* file);
 
 Int_t getNumberOfEvents(const char* uri);
 
+TString getFileNameFromPath(const char* fileNamePath);
+
 TTree* sortTree(TTree* tree, const char* branchName);
 
 // Determine maximum emitted scintillation and cherenkov photons
@@ -210,12 +215,11 @@ std::pair<Double_t, Double_t> getBranchDistributionPerMeV(const char* fileName, 
 
 class CrystalBallFunctionObject {
   public:
+	CrystalBallFunctionObject(Bool_t _isInverted = kFALSE);
     Double_t operator() (double *_x, double *par);
-};
 
-class InvCrystalBallFunctionObject {
-public:
-  Double_t operator() (double *_x, double *par);
+  private:
+    Bool_t isReversed;
 };
 
 class GaussFunctionObject {
@@ -227,6 +231,8 @@ class GaussFunctionObject {
     Double_t normalization;
 };
 
-TF1* fitHistWithCrystalBall(TH1* hist, Bool_t inverted = kFALSE);
+TF1* getCrystalBallFunction(TH1* hist, Bool_t reversed = kFALSE);
+
+TF1* fitHistWithROOTCrystalBall(TH1* hist, Bool_t inverted = kFALSE);
 
 #endif

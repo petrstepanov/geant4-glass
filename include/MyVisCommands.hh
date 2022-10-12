@@ -26,6 +26,7 @@ private:
   G4UIcmdWithAString* fDrawText2DCommand;
   G4UIcommand* fDrawStatsCommand;
   G4UIcommand* fPrintEPScommand;
+  G4UIcommand* fPrintPNGcommand;
 
   G4int lineNumber = 0;
 

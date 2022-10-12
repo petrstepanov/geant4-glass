@@ -16,14 +16,14 @@ public:
   MyRunManager();
   virtual ~MyRunManager();
 
-  void Initialize() override;
+//  void Initialize() override;
 
   void ConstructScoringWorlds() override;
 
 
 private:
   // G4String mySingleParallelWorldName;
-  ActionInitialization* fActionInitialization;
+  // ActionInitialization* fActionInitialization;
 
 };
 

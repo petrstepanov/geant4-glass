@@ -11,14 +11,17 @@
 #include <G4ScoringManager.hh>
 #include <G4TransportationManager.hh>
 #include <G4ParallelWorldProcess.hh>
+#include <G4Version.hh>
 
+#include <string>
+#include <regex>
 
 #define XSTR(x) STR(x)
 #define STR(x) #x
 
 // Custom Run Manager class needed to ensure correct sequence of initialization of user actions
 
-MyRunManager::MyRunManager() : G4RunManager(), fActionInitialization(0) {
+MyRunManager::MyRunManager() : G4RunManager() {
   // mySingleParallelWorldName = "mySingleParallelWorldName";
 }
 
@@ -26,14 +29,14 @@ MyRunManager::~MyRunManager() {
 // TODO Auto-generated destructor stub
 }
 
-void MyRunManager::Initialize() {
-// When '/run/initialize' is called, assign custom user actions
-  fActionInitialization = new ActionInitialization();
-  SetUserInitialization(fActionInitialization);
-
-// Run base class method
-  G4RunManager::Initialize();
-}
+//void MyRunManager::Initialize() {
+//// When '/run/initialize' is called, assign custom user actions
+//  fActionInitialization = new ActionInitialization();
+//  SetUserInitialization(fActionInitialization);
+//
+//// Run base class method
+//  G4RunManager::Initialize();
+//}
 
 // Copied from G4RunManager.cc. But modified to use single parallel world (one specific world name)
 // to ensure only single parallel world is created
@@ -153,7 +156,7 @@ void MyRunManager::ConstructScoringWorlds() {
         // PROBLEM:  On the Farm environment 2.4 we have older version of Geant4, code won't compile.
         //           Only starting Geant 4.07 LayeredMassFlg() is implemented. Therefore code below causes error on older Farm's Geant4 v10.06
         // SOLUTION: Geant4 minor and major versions G4_V1 and G4_V2 are determined at the compile time and added as compile_definitions
-        #if G4_V1 <= 10 && G4_V2 <= 6
+        #if(G4VERSION_NUMBER <= 1060)
           std::cout << "Geant4 version <= 10.6" << std::endl;
         #else
           std::cout << "Geant4 version > 10.6" << std::endl;

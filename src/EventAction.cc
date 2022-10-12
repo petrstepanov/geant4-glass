@@ -44,13 +44,13 @@
 #include <string>
 #include <vector>
 #include "HistoManager.hh"
-#include <g4analysis.hh>
+// #include <g4analysis.hh>
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 EventAction::EventAction() : G4UserEventAction(), fCrystalEdepHCID(-1){
-//  std::cout << "EventAction::EventAction()" << std::endl;
+  //  std::cout << "EventAction::EventAction()" << std::endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -77,11 +77,6 @@ void EventAction::BeginOfEventAction(const G4Event* event){
   }
   else if (event->GetEventID() % 1000 == 0){
     std::cout << "EventAction::BeginOfEventAction " << event->GetEventID()+1 << "+"<< std::endl;
-  }
-
-  // Create separate ntuple for TOF in current event in Analysis Manager
-  if (event->GetEventID() < G4Utils::maxTofEvents){
-	  G4Utils::getInstance()->prepareTOFNtuple(event->GetEventID());
   }
 }
 
@@ -110,7 +105,7 @@ void EventAction::EndOfEventAction(const G4Event* event){
   }
 
   // Save energies registered by the primitive scorer
-  if (detectorConstruction->GetSaveEnergyDeposition()){
+  if (detectorConstruction->GetUsePrimitiveScorer()){
     saveEnergyDepositionFromScorer(event);
   }
 

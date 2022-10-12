@@ -47,11 +47,11 @@
 
 #include <globals.hh>
 #include <G4UImessenger.hh>
-#include <G4VModularPhysicsList.hh>
-#include <G4RunManager.hh>
-#include <G4VModularPhysicsList.hh>
 #include <G4UIcmdWithAString.hh>
 #include <G4UIcmdWithoutParameter.hh>
+
+class G4RunManager;
+class G4VModularPhysicsList;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -63,13 +63,18 @@ public:
   virtual ~PhysicsListMessenger();
     
   virtual void SetNewValue(G4UIcommand*, G4String);
-    
+
+  static const G4String physicsListCmdDefaultValue;
+
 private:
+
+  // Here Run Manager can be multi-threaded because MT is inherited from regular one (dynamic polymorphism)
   G4RunManager *fRunManager;
   
   G4VModularPhysicsList*    fPhysicsList;
-  G4UIcmdWithAString*       fSelectListCmd;
-  G4UIcmdWithoutParameter*  fAddOpticalCmd;
+
+  G4UIcommand*       fSelectListCmd;
+//  G4UIcmdWithoutParameter*  fAddOpticalCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

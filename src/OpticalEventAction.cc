@@ -91,6 +91,13 @@ void OpticalEventAction::BeginOfEventAction(const G4Event* event){
     fScintPhotoElectrons[i] = 0;
     fCherePhotoElectrons[i] = 0;
   }
+
+  // Create separate ntuple for TOF in current event in Analysis Manager
+  if (G4Utils::getDetectorConstruction()->GetSaveTimeOfFlight()) {
+    if (event->GetEventID() < G4Utils::maxTofEvents){
+      G4Utils::getInstance()->prepareTOFNtuple(event->GetEventID());
+    }
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

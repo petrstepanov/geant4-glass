@@ -35,21 +35,20 @@
 #ifndef DetectorConstruction_h
 #define DetectorConstruction_h 1
 
-#include "AbsDetector.hh"
-#include "G4VUserDetectorConstruction.hh"
-#include "globals.hh"
+#include <globals.hh>
+#include <G4String.hh>
+#include <G4VUserDetectorConstruction.hh>
+#include <G4ThreeVector.hh>
+#include <G4SystemOfUnits.hh>
+#include <G4Material.hh>
+#include <G4VPrimitiveScorer.hh>
+#include <G4TwoVector.hh>
 
-#include "G4ThreeVector.hh"
-#include "G4SystemOfUnits.hh"
-#include "G4Material.hh"
 #include "DetectorMessenger.hh"
-#include "G4VPrimitiveScorer.hh"
-#include "G4TwoVector.hh"
+#include "AbsDetector.hh"
 
-//class G4LogicalVolume;
-//class G4Material;
-//class DetectorMessenger;
-//class SensitiveDetector;
+#include <vector>
+#include <string>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -146,11 +145,14 @@ class DetectorConstruction: public G4VUserDetectorConstruction {
     void SetShieldReflective(G4bool value);
     G4bool GetShieldReflective();
 
-    void SetSaveEnergyDeposition(G4bool);
-    G4bool GetSaveEnergyDeposition();
+    void SetUsePrimitiveScorer(G4bool);
+    G4bool GetUsePrimitiveScorer();
 
     void SetSaveWorldEscapeEnergy(G4bool);
     G4bool GetSaveWorldEscapeEnergy();
+
+    void SetSaveTimeOfFlight(G4bool);
+    G4bool GetSaveTimeOfFlight();
 
     void SetUseGlobalScoringMesh(G4bool);
     G4bool GetUseGlobalScoringMesh();
@@ -243,12 +245,11 @@ class DetectorConstruction: public G4VUserDetectorConstruction {
 
     G4bool fUsePrimitiveScorer;
     G4bool fUseWorldEscapeAction;
+    G4bool fUseTimeOfFlight;
     G4bool fUseGlobalScoringMesh;
     G4bool fUseUnitVolumeScoringMesh;
 
     G4int fNumberOfUnitVolumes;
-
-    G4bool fCheckOverlaps;
 
     // Names
     G4String fCrystalType;

@@ -28,6 +28,7 @@
 #include <G4VModularPhysicsList.hh>
 #include <G4VScoringMesh.hh>
 #include <PrimaryGeneratorAction.hh>
+#include "G4AnalysisManager.hh"
 #include <RtypesCore.h>
 #include <stddef.h>
 #include <algorithm>
@@ -38,7 +39,7 @@
 #include <iostream>
 #include <G4VProcess.hh>
 #include <map>
-#include "g4analysis.hh"
+// #include "g4analysis.hh"
 
 using std::chrono::_V2::system_clock;
 
@@ -359,6 +360,8 @@ std::vector<G4double> G4Utils::getUnitVolumesQuantityFromMesh(const char* meshNa
 G4double G4Utils::getProjectionZMaximumQuantityFromMesh(const char *meshName, const char *psName) {
   G4ScoringManager *scoringManager = G4ScoringManager::GetScoringManager();
   G4VScoringMesh *fScoringMesh = scoringManager->FindMesh(meshName);
+
+  if (!fScoringMesh) return 0;
 
   using MeshScoreMap = G4VScoringMesh::MeshScoreMap;
 
@@ -684,6 +687,11 @@ G4String G4Utils::getTOFNtupleName(G4int eventNumber){
 	return ntupleName;
 }
 
+G4int G4Utils::getNTupleNumber(G4int eventNumber){
+  int nTupleID = eventNumberToNTupleNumber[eventNumber];
+  return nTupleID;
+}
+
 // Depending if the event number is passed to the function we create
 // - a "global" ntuple containing TOF for the first 100 events
 // - "local" ntuple containing TOF information for one particular event
@@ -706,9 +714,8 @@ void G4Utils::prepareTOFNtuple(G4int eventNumber){
 
 	G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 	G4int ntupleId = analysisManager->CreateNtuple(ntupleName, ntupleTitle);
-//	if (eventNumber == -1){
-//		firstTOFNtupleId = ntupleId;
-//	}
+	eventNumberToNTupleNumber.insert(std::pair<int, int>(eventNumber, ntupleId));
+
 	analysisManager->CreateNtupleSColumn(ntupleId, "Process");
 	analysisManager->CreateNtupleDColumn(ntupleId, "nPE");
 	analysisManager->CreateNtupleDColumn(ntupleId, "globalTime");
@@ -717,15 +724,33 @@ void G4Utils::prepareTOFNtuple(G4int eventNumber){
 	analysisManager->FinishNtuple();
 }
 
-//G4int G4Utils::getFirstTOFNtupleId(){
-//	return firstTOFNtupleId;
-//}
-
-
 G4String G4Utils::getCreatorProcessSafe(const G4Track* track){
   // If shooting op from GPS, CreatorProcess is NULL
   G4String creatorProcessString = (track->GetCreatorProcess() == nullptr) ?
                                   "gps" :
                                   std::string(track->GetCreatorProcess()->GetProcessName().c_str());
   return creatorProcessString;
+}
+
+G4String G4Utils::getOutputFileName(G4String suffix){
+  // Construct filename
+  std::stringstream buffer;
+  buffer << "./output/";
+  buffer << G4Utils::getCrystalMaterial() << "-";
+  buffer << G4Utils::getNCrystalsX() << "x" << G4Utils::getNCrystalsY() << "-";
+  buffer << G4Utils::getCrystalX() << "x" << G4Utils::getCrystalY() << "x" << G4Utils::getCrystalZ() << "mm-";
+  buffer << G4Utils::getGPSMonoEnergy()/1E3 << "GeV-";
+  buffer << G4Utils::getNumberOfEvents() << "events-";
+  buffer << G4Utils::getGPSParticleName();
+  if (G4Utils::getGPSZPos() > 0) buffer << "+";
+  if (G4Utils::getGPSZPos() > 0 && G4Utils::getGPSZPos() < 100) buffer << "0";
+  buffer << G4Utils::getGPSZPos() << "mm-";
+  buffer << G4Utils::getDetector()->getName();
+  if (suffix.length()>0){
+    buffer << "-" << suffix;
+  }
+  buffer << ".root";
+
+  G4String fileNameString = buffer.str();
+  return fileNameString;
 }

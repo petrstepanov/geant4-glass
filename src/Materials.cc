@@ -88,15 +88,17 @@ Materials::Materials() : fMaterialsList{}
     // Refractive Index of Vacuum
     std::vector<G4double> rIndex = {200, 1., 800, 1.};
     G4MaterialPropertyVector* rIndexMPV = nmToMPV(rIndex);
-    mpt->AddProperty("RINDEX", rIndexMPV);
+    mpt->AddProperty("RINDEX", rIndexMPV, true);
 
     // Absorption length of Vacuum
     std::vector<G4double> absLength  = {200, 1000*km, 800, 1000*km};
     G4MaterialPropertyVector* absLengthMPV = nmToMPV(absLength);
-    mpt->AddProperty("ABSLENGTH", absLengthMPV);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
 
     // mpt->DumpTable();
     material->SetMaterialPropertiesTable(mpt);
+
+    printMaterialProperties(material);
     fMaterialsList.push_back(material);
     saveMaterial(material);
   }
@@ -116,17 +118,18 @@ Materials::Materials() : fMaterialsList{}
     // https://refractiveindex.info/?shelf=other&book=air&page=Ciddor
     std::vector<G4double> rIndex = { 400, 1.00028276, 440, 1.00028091, 480, 1.00027954, 520, 1.00027848, 560, 1.00027765, 600, 1.00027698, 640, 1.00027644, 680, 1.00027600};
     G4MaterialPropertyVector* rIndexMPV = nmToMPV(rIndex);
-    mpt->AddProperty("RINDEX", rIndexMPV);
+    mpt->AddProperty("RINDEX", rIndexMPV, true);
 
     // Absorption length of Air
     // https://web.physik.rwth-aachen.de/~hebbeker/theses/dietz-laursonn_phd.pdf
     std::vector<G4double> absLength  = {400, 50*m, 680, 50*m};
     G4MaterialPropertyVector* absLengthMPV = nmToMPV(absLength);
-    mpt->AddProperty("ABSLENGTH", absLengthMPV);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
 
     // mpt->DumpTable();
     air->SetMaterialPropertiesTable(mpt);
   }
+  printMaterialProperties(air);
   fMaterialsList.push_back(air);
   saveMaterial(air);
 
@@ -140,16 +143,17 @@ Materials::Materials() : fMaterialsList{}
     // https://engineering.case.edu/centers/sdle/sites/engineering.case.edu.centers.sdle/files/optical_properties_of_teflon_r_af_amorphous_fluo.pdf
     std::vector<G4double> rIndex = { 145.861, 1.399, 149.377, 1.427, 153.114, 1.430, 156.996, 1.417, 161.099, 1.399, 165.348, 1.388, 179.780, 1.364, 180.162, 1.344, 203.017, 1.328, 232.905, 1.318, 264.551, 1.312, 301.471, 1.308, 354.214, 1.305, 459.701, 1.301, 653.092, 1.297, 955.486, 1.295, 1379.190, 1.292, 1549.726, 1.292 };
     G4MaterialPropertyVector *rIndexMPV = nmToMPV(rIndex);
-    mpt->AddProperty("RINDEX", rIndexMPV);
+    mpt->AddProperty("RINDEX", rIndexMPV, true);
 
     std::vector<G4double> absLength = {157.902, 1/4513.216*cm, 159.285, 1/3295.154*cm, 161.524, 1/2200.441*cm, 164.224, 1/1321.586*cm, 168.636, 1/674.009*cm, 174.167, 1/303.965*cm, 181.477, 1/165.198*cm, 187.404, 1/134.361*cm, 195.108, 1/72.687*cm, 206.105, 1/41.850*cm, 220, 1/1*cm};
     G4MaterialPropertyVector* absLengthMPV = nmToMPV(absLength);
-    mpt->AddProperty("ABSLENGTH", absLengthMPV);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
 
     // TODO: add emission p. 321
     // https://sci-hub.do/10.1016/0168-9002(96)00286-0
     teflon->SetMaterialPropertiesTable(mpt);
   }
+  printMaterialProperties(teflon);
   fMaterialsList.push_back(teflon);
   saveMaterial(teflon);
 
@@ -166,21 +170,22 @@ Materials::Materials() : fMaterialsList{}
   G4MaterialPropertiesTable* bc630MPT = new G4MaterialPropertiesTable();
 
   // Found nice article here: https://sci-hub.do/10.3390/s20216092
-  std::vector<G4double> refractiveIndexBC630 = {350, 1.465,
-  																							650, 1.465};
+  std::vector<G4double> refractiveIndexBC630 = {350, 1.465, 650, 1.465};
   G4MaterialPropertyVector* refractiveIndexBC630MPV = nmToMPV(refractiveIndexBC630);
-  bc630MPT->AddProperty("RINDEX", refractiveIndexBC630MPV);
+  bc630MPT->AddProperty("RINDEX", refractiveIndexBC630MPV, true);
 
   std::vector<G4double> absorptionLengthBC630 = {350, 1/0.004*cm,
   																							 400, 1/0.002*cm,
   																							 450, 1/0.001*cm,
   																							 650, 1/0.0005*cm};
   G4MaterialPropertyVector* absorptionLengthBC630MPV = nmToMPV(absorptionLengthBC630);
-  bc630MPT->AddProperty("ABSLENGTH", absorptionLengthBC630MPV);
+  bc630MPT->AddProperty("ABSLENGTH", absorptionLengthBC630MPV, true);
   // bc630MPT->DumpTable();
   bc630->SetMaterialPropertiesTable(bc630MPT);
 
+  printMaterialProperties(bc630);
   fMaterialsList.push_back(bc630);
+  saveMaterial(bc630);
 
   // █▀█ █▀▄ █▀▄▀█ █▀   █▀▀ █▀█ █▀▀ ▄▀█ █▀ █▀▀
   // █▀▀ █▄▀ █░▀░█ ▄█   █▄█ █▀▄ ██▄ █▀█ ▄█ ██▄
@@ -205,12 +210,14 @@ Materials::Materials() : fMaterialsList{}
   G4MaterialPropertyVector* absorptionLengthGreaseMPV = evToMPV(absorptionLengthGrease);
 
   G4MaterialPropertiesTable* greaseMPT = new G4MaterialPropertiesTable();
-  greaseMPT->AddProperty("RINDEX", refractiveIndexGreaseMPV);
-  greaseMPT->AddProperty("ABSLENGTH", absorptionLengthGreaseMPV);
+  greaseMPT->AddProperty("RINDEX", refractiveIndexGreaseMPV, true);
+  greaseMPT->AddProperty("ABSLENGTH", absorptionLengthGreaseMPV, true);
   // greaseMPT->DumpTable();
   grease->SetMaterialPropertiesTable(greaseMPT);
 
+  printMaterialProperties(grease);
   fMaterialsList.push_back(grease);
+  saveMaterial(grease);
 
   // █▄▄ █▀█ █▀█ █▀█ █▀ █ █░░ █ █▀▀ ▄▀█ ▀█▀ █▀▀   █▀▀ █░░ ▄▀█ █▀ █▀
   // █▄█ █▄█ █▀▄ █▄█ ▄█ █ █▄▄ █ █▄▄ █▀█ ░█░ ██▄   █▄█ █▄▄ █▀█ ▄█ ▄█
@@ -228,23 +235,27 @@ Materials::Materials() : fMaterialsList{}
   // LXeDetectorConstruction: 1.49
 
   std::vector<G4double> refractiveIndexBorosilicate = {300, 1.49,
-  																								     650, 1.49};
+//  																								     650, 1.49};
+  1000, 1.49};
   G4MaterialPropertyVector* refractiveIndexBorosilicateMPV = nmToMPV(refractiveIndexBorosilicate);
 
   // https://refractiveindex.info/?shelf=glass&book=SUMITA-BK&page=K-BK7
   // alpha = 0.0034706 cm-1 => 1/0.0034706 = 288 cm
   // LXeDetectorConstruction: 420.*cm
   std::vector<G4double> absorptionLengthBorosilicate = {300, 420.*cm,
-  																								     650, 420.*cm};
+//      650, 420.*cm};
+  																								     1000, 420.*cm};
   G4MaterialPropertyVector* absorptionLengthBorosilicateMPV = nmToMPV(absorptionLengthBorosilicate);
 
   G4MaterialPropertiesTable* borosilicateMPT = new G4MaterialPropertiesTable();
-  borosilicateMPT->AddProperty("RINDEX", refractiveIndexBorosilicateMPV);
-  borosilicateMPT->AddProperty("ABSLENGTH", absorptionLengthBorosilicateMPV);
+  borosilicateMPT->AddProperty("RINDEX", refractiveIndexBorosilicateMPV ,true);
+  borosilicateMPT->AddProperty("ABSLENGTH", absorptionLengthBorosilicateMPV, true);
   // borosilicateMPT->DumpTable();
   borosilicate->SetMaterialPropertiesTable(borosilicateMPT);
 
+  printMaterialProperties(borosilicate);
   fMaterialsList.push_back(borosilicate);
+  saveMaterial(borosilicate);
 
   // █▀▀ █░█ █▀ █▀▀ █▀▄   █▀█ █░█ ▄▀█ █▀█ ▀█▀ ▀█   █▀▀ █░░ ▄▀█ █▀ █▀
   // █▀░ █▄█ ▄█ ██▄ █▄▀   ▀▀█ █▄█ █▀█ █▀▄ ░█░ █▄   █▄█ █▄▄ █▀█ ▄█ ▄█
@@ -265,12 +276,14 @@ Materials::Materials() : fMaterialsList{}
   G4MaterialPropertyVector* absorptionLengthSilicaMPV = nmToMPV(absorptionLengthSilica);
 
   G4MaterialPropertiesTable* silicaMPT = new G4MaterialPropertiesTable();
-  silicaMPT->AddProperty("RINDEX", refractiveIndexSilicaMPV);
-  silicaMPT->AddProperty("ABSLENGTH", absorptionLengthSilicaMPV);
+  silicaMPT->AddProperty("RINDEX", refractiveIndexSilicaMPV ,true);
+  silicaMPT->AddProperty("ABSLENGTH", absorptionLengthSilicaMPV, true);
   // silicaMPT->DumpTable();
   fusedSilica->SetMaterialPropertiesTable(silicaMPT);
 
+  printMaterialProperties(fusedSilica);
   fMaterialsList.push_back(fusedSilica);
+  saveMaterial(fusedSilica);
 
   // █▀ █ █░░ █ █▀▀ █▀█ █▄░█ █▀▀   █▀█ █▀▀ █▀ █ █▄░█
   // ▄█ █ █▄▄ █ █▄▄ █▄█ █░▀█ ██▄   █▀▄ ██▄ ▄█ █ █░▀█
@@ -292,12 +305,14 @@ Materials::Materials() : fMaterialsList{}
   G4MaterialPropertyVector* absorptionLengthResinMPV = nmToMPV(absorptionLengthResin);
 
   G4MaterialPropertiesTable* resinMPT = new G4MaterialPropertiesTable();
-  resinMPT->AddProperty("RINDEX", refractiveIndexResinMPV);
-  resinMPT->AddProperty("ABSLENGTH", absorptionLengthResinMPV);
+  resinMPT->AddProperty("RINDEX", refractiveIndexResinMPV, true);
+  resinMPT->AddProperty("ABSLENGTH", absorptionLengthResinMPV, true);
   // resinMPT->DumpTable();
   siliconeResin->SetMaterialPropertiesTable(resinMPT);
 
+  printMaterialProperties(siliconeResin);
   fMaterialsList.push_back(siliconeResin);
+  saveMaterial(siliconeResin);
 
   // █▄▄ █ ▄▀█ █░░ █▄▀ ▄▀█ █░░ █
   // █▄█ █ █▀█ █▄▄ █░█ █▀█ █▄▄ █
@@ -316,10 +331,12 @@ Materials::Materials() : fMaterialsList{}
   																								 650, 1.49};
   G4MaterialPropertyVector* refractiveIndexBialkaliMPV = nmToMPV(refractiveIndexBialkali);
 
-  bialkaliMPT->AddProperty("RINDEX", refractiveIndexBialkaliMPV);
+  bialkaliMPT->AddProperty("RINDEX", refractiveIndexBialkaliMPV, true);
   bialkaliCathode->SetMaterialPropertiesTable(bialkaliMPT);
 
+  printMaterialProperties(bialkaliCathode);
   fMaterialsList.push_back(bialkaliCathode);
+  saveMaterial(bialkaliCathode);
 
   // █▀▄▀█ █░█ █░░ ▀█▀ █ ▄▀█ █░░ █▄▀ ▄▀█ █░░ █
   // █░▀░█ █▄█ █▄▄ ░█░ █ █▀█ █▄▄ █░█ █▀█ █▄▄ █
@@ -335,14 +352,15 @@ Materials::Materials() : fMaterialsList{}
   G4MaterialPropertiesTable* multialkaliMPT = new G4MaterialPropertiesTable();
   // Use same refraction index as the borosilicate glass (window) like here: https://core.ac.uk/download/pdf/276263522.pdf
   // And R2257 with multialkali photocathode has borosilicate window: https://www.hamamatsu.com/resources/pdf/etd/R2257_TPMH1141E.pdf
-  std::vector<G4double> refractiveIndexMultialkali = {300, 1.49,
-  																								    650, 1.49};
+  std::vector<G4double> refractiveIndexMultialkali = {300, 1.49, 650, 1.49};
   G4MaterialPropertyVector* refractiveIndexMultialkaliMPV = nmToMPV(refractiveIndexMultialkali);
 
-  multialkaliMPT->AddProperty("RINDEX", refractiveIndexMultialkaliMPV);
+  multialkaliMPT->AddProperty("RINDEX", refractiveIndexMultialkaliMPV ,true);
   multialkaliCathode->SetMaterialPropertiesTable(multialkaliMPT);
 
+  printMaterialProperties(multialkaliCathode);
   fMaterialsList.push_back(multialkaliCathode);
+  saveMaterial(multialkaliCathode);
 
   // █▀ █ █░░ █ █▀▀ █▀█ █▄░█ ▄▄ █▀▀ █▀█ █▄█ █▀ ▀█▀ ▄▀█ █░░
   // ▄█ █ █▄▄ █ █▄▄ █▄█ █░▀█ ░░ █▄▄ █▀▄ ░█░ ▄█ ░█░ █▀█ █▄▄
@@ -357,11 +375,13 @@ Materials::Materials() : fMaterialsList{}
     std::vector<G4double> ri = {300, 1.41, 650, 1.41};
     G4MaterialPropertyVector* riMPV = nmToMPV(ri);
 
-    mpt->AddProperty("RINDEX", riMPV);
+    mpt->AddProperty("RINDEX", riMPV, true);
     siCathode->SetMaterialPropertiesTable(mpt);
   }
 
+  printMaterialProperties(siCathode);
   fMaterialsList.push_back(siCathode);
+  saveMaterial(siCathode);
 
   // █▀█ █░█░█ █▀█ ▄▄ █▄▄ █▀█ █▀▀ █▀█ █▀█ █▀█ █▀▄ █ ▀█▀ █▀ █▄▀
   // █▀▀ ▀▄▀▄▀ █▄█ ░░ █▄█ █▄█ █▄█ █▄█ █▀▄ █▄█ █▄▀ █ ░█░ ▄█ █░█
@@ -378,9 +398,9 @@ Materials::Materials() : fMaterialsList{}
     G4double transmittanceDistance = 21.3*cm;
 
     // Absorption length PbWO4
-    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX", true);
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
     G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
-    mpt->AddProperty("ABSLENGTH", absLengthMPV);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
 
     // TODO: add emission p. 321
     // https://sci-hub.do/10.1016/0168-9002(96)00286-0
@@ -404,9 +424,9 @@ Materials::Materials() : fMaterialsList{}
   //   G4double transmittanceDistance = 22*cm;
 
   //   // Absorption length PbWO4
-  //   G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX", true);
+  //   G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
   //   G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
-  //   mpt->AddProperty("ABSLENGTH", absLengthMPV);
+  //   mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
 
   //   PWO_Y->SetMaterialPropertiesTable(mpt);
   // }
@@ -448,8 +468,8 @@ Materials::Materials() : fMaterialsList{}
     G4MaterialPropertyVector* fastComponent = nmToMPV(emissionSpectrum);
     G4MaterialPropertyVector* slowComponent = nmToMPV(emissionSpectrum);
 
-    mpt->AddProperty("FASTCOMPONENT", fastComponent);
-    mpt->AddProperty("SLOWCOMPONENT", slowComponent);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", fastComponent, true);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT2", slowComponent, true);
 
     // Transmittance CRYTUR, provided by V.Berdnikov
   	std::vector<G4double> transmittance = {330, 0, 340, 1.566694, 350, 13.223613, 360, 45.441407, 370, 62.071972, 380, 67.140230, 390, 68.931434, 400, 69.772116, 410, 70.262557, 420, 70.646469, 430, 71.216135, 440, 71.501950, 450, 71.723380, 460, 71.975302, 470, 72.019692, 480, 72.192253, 490, 72.614533, 500, 72.789630, 510, 72.788232, 520, 72.912663, 530, 73.042799, 540, 73.235979, 550, 73.354468, 560, 73.453758, 570, 73.639631, 580, 73.695232, 590, 73.819757, 600, 73.957622, 610, 73.997395, 620, 74.067210, 630, 74.073362, 640, 74.278860, 650, 74.253225, 660, 74.346432, 670, 74.327692, 680, 74.598802, 690, 74.607074, 700, 74.542008, 710, 74.542790, 720, 74.641923, 730, 74.787570, 740, 74.585494, 750, 74.804944, 760, 74.843619, 770, 74.728880, 780, 74.860927, 790, 74.742771, 800, 74.925695};
@@ -457,9 +477,9 @@ Materials::Materials() : fMaterialsList{}
     G4double transmittanceDistance = 20*cm;
 
     // Absorption length PbWO4
-    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX", true);
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
     G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
-    mpt->AddProperty("ABSLENGTH", absLengthMPV);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
 
     PWO_C->SetMaterialPropertiesTable(mpt);
   }
@@ -483,8 +503,8 @@ Materials::Materials() : fMaterialsList{}
     std::vector<G4double> emissionSpectrum = {349.7, 0, 358.5, 0.0013858556703, 367.4, 0.002899146344766, 376.7, 0.004523942647876, 385.8, 0.006021303946821, 390.4, 0.006738125845252, 397.5, 0.00759831212337, 404.9, 0.008331063397322, 412, 0.008968238418149, 415.1, 0.009270896553042, 419.7, 0.00944611968377, 424.5, 0.009541695936894, 429.7, 0.009541695936894, 434.8, 0.009414260932729, 441.6, 0.008904520916067, 447.6, 0.008346992772842, 454.1, 0.007741676503056, 461, 0.00713636023327, 467.8, 0.006419538334839, 474.9, 0.005638998934325, 482.6, 0.004794742031728, 490, 0.003966414504652, 496.5, 0.003265521981742, 500.2, 0.002851358218204, 508.7, 0.002166395070814, 514.7, 0.001768160682797, 521, 0.001401785045821, 531.2, 0.000939833155721, 540.3, 0.000541598767704, 549.7, 0.00023894063281, 559.1, 0};
     G4MaterialPropertyVector* fastComponent = nmToMPV(emissionSpectrum);
     G4MaterialPropertyVector* slowComponent = nmToMPV(emissionSpectrum);
-    mpt->AddProperty("FASTCOMPONENT", fastComponent);
-    mpt->AddProperty("SLOWCOMPONENT", slowComponent);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", fastComponent, true);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT2", slowComponent, true);
 
     // Transmittance SICCAS (S047), provided by V.Berdnikov
   	std::vector<G4double> transmittance = {340, 0., 350, 3.48074, 360, 29.3949, 370, 48.346, 380, 55.3979, 390, 58.6286, 400, 60.9593, 410, 62.6595, 420, 63.9743, 430, 64.9291, 440, 65.631, 450, 66.1062, 460, 66.7927, 470, 67.1896, 480, 67.3996, 490, 67.7139, 500, 68.053, 510, 68.3073, 520, 68.519, 530, 68.8111, 540, 68.9737, 550, 69.0832, 560, 69.4211, 570, 69.5605, 580, 69.6869, 590, 69.8266, 600, 69.9968, 610, 70.0129, 620, 70.1723, 630, 70.2061, 640, 70.3685, 650, 70.4813, 660, 70.4112, 670, 70.5207, 680, 70.6612, 690, 70.6313, 700, 70.6932, 710, 70.7846, 720, 70.7335, 730, 70.8962, 740, 70.934, 750, 70.9511, 760, 71.0478, 770, 71.0046, 780, 71.0511, 790, 71.0082, 800, 70.973};
@@ -492,9 +512,9 @@ Materials::Materials() : fMaterialsList{}
     G4double transmittanceDistance = 20*cm;
 
     // Absorption length PbWO4
-    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX", true);
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
     G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
-    mpt->AddProperty("ABSLENGTH", absLengthMPV);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
 
     PWO_S->SetMaterialPropertiesTable(mpt);
   }
@@ -502,6 +522,415 @@ Materials::Materials() : fMaterialsList{}
   fMaterialsList.push_back(PWO_S);
   saveMaterial(PWO_S);
   generateEmissionMacro(PWO_S);
+
+  // █▀ █▀▀ █ █▀▀ █░░ ▄▀█ █▀ █▀ ▄▄ █░░ █ █▀▀ █░█ ▀█▀
+  // ▄█ █▄▄ █ █▄█ █▄▄ █▀█ ▄█ ▄█ ░░ █▄▄ █ █▄█ █▀█ ░█░
+
+  G4Material* SciGlassLight = getBaseMaterial("SciGlassLight", BaseMaterialType::SciGlassLight);
+  {
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance SciGlass-1-1 (transverse), provided by T.Horn
+    std::vector<G4double> transmittance = {381, 0.0, 384, 0.88395, 387, 3.7391, 390, 8.9681, 393, 16.402, 396, 24.866, 399, 33.34, 402, 40.975, 405, 47.441, 408, 52.828, 411, 57.029, 414, 60.497, 417, 63.07, 420, 65.154, 423, 66.692, 426, 68.072, 429, 69.218, 432, 70.133, 435, 70.96, 438, 71.535, 441, 72.088, 444, 72.362, 447, 72.83, 450, 73.239, 453, 73.793, 456, 74.296, 459, 74.61, 462, 74.93, 465, 75.148, 468, 75.477, 471, 75.856, 474, 76.35, 477, 76.718, 480, 77.086, 483, 77.231, 486, 77.383, 489, 77.593, 492, 77.7, 495, 77.983, 498, 78.169, 501, 78.381, 504, 78.555, 507, 78.666, 510, 78.661, 513, 78.678, 516, 78.869, 519, 78.974, 522, 79.197, 525, 79.129, 528, 79.148, 531, 79.003, 534, 79.119, 537, 79.138, 540, 79.197, 543, 79.274, 546, 79.312, 549, 79.264, 552, 79.027, 555, 79.005, 558, 78.896, 561, 78.995, 564, 79.019, 567, 78.962, 570, 78.728, 573, 78.557, 576, 78.425, 579, 78.307, 582, 78.309, 585, 78.057, 588, 78.054, 591, 77.818, 594, 77.658, 597, 77.432, 600, 77.294, 603, 77.225, 606, 77.064, 609, 77.062, 612, 76.79, 615, 76.626, 618, 76.31, 621, 76.249, 624, 75.946, 627, 75.919, 630, 75.761, 633, 75.55, 636, 75.388, 639, 75.008, 642, 75.049, 645, 74.717, 648, 74.462, 651, 73.938, 654, 73.666, 657, 73.449, 660, 73.312, 663, 73.108, 666, 72.94, 669, 72.429, 672, 71.99, 675, 71.933, 678, 71.66, 681, 71.652, 684, 71.377, 687, 71.049, 690, 70.418, 693, 69.683, 696, 69.551, 699, 69.17, 702, 69.095, 705, 68.751, 708, 68.504, 711, 67.999, 714, 67.784, 717, 66.975, 720, 67.033, 723, 66.511, 726, 65.4, 729, 64.959, 732, 64.895, 735, 65.383, 738, 64.083, 741, 63.936, 744, 63.223, 747, 62.668, 750, 62.411, 753, 60.829, 756, 60.145, 759, 59.969, 762, 60.002, 765, 61.4, 768, 59.442, 771, 56.521, 774, 56.201, 777, 53.559, 780, 54.146, 783, 55.215, 786, 53.376, 789, 53.957, 792, 56.12, 795, 58.477};
+    G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 2*cm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    SciGlassLight->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(SciGlassLight);
+  fMaterialsList.push_back(SciGlassLight);
+  saveMaterial(SciGlassLight);
+
+  // █▀ █▀▀ █ █▀▀ █░░ ▄▀█ █▀ █▀ ▄▄ ▄█ ▄▄ ▄█ ▄▄ ▀█▀
+  // ▄█ █▄▄ █ █▄█ █▄▄ █▀█ ▄█ ▄█ ░░ ░█ ░░ ░█ ░░ ░█░
+
+  G4Material* SciGlass11T = getBaseMaterial("SciGlass-1-1-T", BaseMaterialType::SciGlass);
+  {
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance SciGlass-1-1 (transverse), provided by T.Horn
+  	std::vector<G4double> transmittance = {381, 0.0, 384, 0.88395, 387, 3.7391, 390, 8.9681, 393, 16.402, 396, 24.866, 399, 33.34, 402, 40.975, 405, 47.441, 408, 52.828, 411, 57.029, 414, 60.497, 417, 63.07, 420, 65.154, 423, 66.692, 426, 68.072, 429, 69.218, 432, 70.133, 435, 70.96, 438, 71.535, 441, 72.088, 444, 72.362, 447, 72.83, 450, 73.239, 453, 73.793, 456, 74.296, 459, 74.61, 462, 74.93, 465, 75.148, 468, 75.477, 471, 75.856, 474, 76.35, 477, 76.718, 480, 77.086, 483, 77.231, 486, 77.383, 489, 77.593, 492, 77.7, 495, 77.983, 498, 78.169, 501, 78.381, 504, 78.555, 507, 78.666, 510, 78.661, 513, 78.678, 516, 78.869, 519, 78.974, 522, 79.197, 525, 79.129, 528, 79.148, 531, 79.003, 534, 79.119, 537, 79.138, 540, 79.197, 543, 79.274, 546, 79.312, 549, 79.264, 552, 79.027, 555, 79.005, 558, 78.896, 561, 78.995, 564, 79.019, 567, 78.962, 570, 78.728, 573, 78.557, 576, 78.425, 579, 78.307, 582, 78.309, 585, 78.057, 588, 78.054, 591, 77.818, 594, 77.658, 597, 77.432, 600, 77.294, 603, 77.225, 606, 77.064, 609, 77.062, 612, 76.79, 615, 76.626, 618, 76.31, 621, 76.249, 624, 75.946, 627, 75.919, 630, 75.761, 633, 75.55, 636, 75.388, 639, 75.008, 642, 75.049, 645, 74.717, 648, 74.462, 651, 73.938, 654, 73.666, 657, 73.449, 660, 73.312, 663, 73.108, 666, 72.94, 669, 72.429, 672, 71.99, 675, 71.933, 678, 71.66, 681, 71.652, 684, 71.377, 687, 71.049, 690, 70.418, 693, 69.683, 696, 69.551, 699, 69.17, 702, 69.095, 705, 68.751, 708, 68.504, 711, 67.999, 714, 67.784, 717, 66.975, 720, 67.033, 723, 66.511, 726, 65.4, 729, 64.959, 732, 64.895, 735, 65.383, 738, 64.083, 741, 63.936, 744, 63.223, 747, 62.668, 750, 62.411, 753, 60.829, 756, 60.145, 759, 59.969, 762, 60.002, 765, 61.4, 768, 59.442, 771, 56.521, 774, 56.201, 777, 53.559, 780, 54.146, 783, 55.215, 786, 53.376, 789, 53.957, 792, 56.12, 795, 58.477};
+  	G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 2*cm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    SciGlass11T->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(SciGlass11T);
+  fMaterialsList.push_back(SciGlass11T);
+  saveMaterial(SciGlass11T);
+
+
+  // █▀ █▀▀ █ █▀▀ █░░ ▄▀█ █▀ █▀ ▄▄ ▀█ ▄▄ ▄█ ▄▄ ▀█▀
+  // ▄█ █▄▄ █ █▄█ █▄▄ █▀█ ▄█ ▄█ ░░ █▄ ░░ ░█ ░░ ░█░
+
+  G4Material* SciGlass21T = getBaseMaterial("SciGlass-2-1-T", BaseMaterialType::SciGlass);
+  {
+  	G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance SciGlass-2-1 (transverse), provided by T.Horn
+  	std::vector<G4double> transmittance = {378, 0.0, 381, 0.26746, 384, 2.1027, 387, 6.0898, 390, 12.19, 393, 19.837, 396, 27.332, 399, 33.963, 402, 39.386, 405, 43.572, 408, 46.755, 411, 49.091, 414, 50.844, 417, 52.073, 420, 53.202, 423, 53.947, 426, 54.716, 429, 55.258, 432, 55.847, 435, 56.267, 438, 56.792, 441, 57.278, 444, 57.825, 447, 58.418, 450, 58.905, 453, 59.44, 456, 59.823, 459, 60.352, 462, 60.867, 465, 61.491, 468, 61.836, 471, 62.458, 474, 62.897, 477, 63.204, 480, 63.677, 483, 63.978, 486, 64.43, 489, 64.708, 492, 65.041, 495, 65.241, 498, 65.504, 501, 65.795, 504, 66.076, 507, 66.4, 510, 66.642, 513, 66.806, 516, 66.743, 519, 66.845, 522, 66.905, 525, 67.093, 528, 67.122, 531, 67.165, 534, 67.183, 537, 67.062, 540, 67.167, 543, 67.165, 546, 67.253, 549, 67.264, 552, 67.258, 555, 67.082, 558, 66.848, 561, 66.68, 564, 66.679, 567, 66.773, 570, 66.615, 573, 66.41, 576, 66.029, 579, 65.866, 582, 65.726, 585, 65.677, 588, 65.518, 591, 65.277, 594, 64.984, 597, 64.663, 600, 64.545, 603, 64.41, 606, 64.319, 609, 64.166, 612, 63.966, 615, 63.664, 618, 63.323, 621, 63.077, 624, 62.895, 627, 62.632, 630, 62.493, 633, 62.164, 636, 61.822, 639, 61.519, 642, 61.411, 645, 61.152, 648, 60.896, 651, 60.488, 654, 60.078, 657, 59.583, 660, 59.267, 663, 59.019, 666, 58.783, 669, 58.523, 672, 58.302, 675, 57.923, 678, 57.605, 681, 57.202, 684, 56.965, 687, 56.833, 690, 56.418, 693, 56.206, 696, 55.674, 699, 54.939, 702, 54.528, 705, 54.578, 708, 54.034, 711, 53.689, 714, 53.675, 717, 52.822, 720, 52.322, 723, 52.113, 726, 51.633, 729, 51.255, 732, 51.252, 735, 50.861, 738, 49.994, 741, 49.297, 744, 49.165, 747, 48.512, 750, 48.055, 753, 48.042, 756, 45.924, 759, 45.991, 762, 45.467, 765, 43.336, 768, 45.89, 771, 43.027, 774, 43.357, 777, 42.904, 780, 41.232, 783, 40.726, 786, 42.489, 789, 41.484, 792, 43.721, 795, 44.917};
+  	G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 2*cm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    SciGlass21T->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(SciGlass21T);
+  fMaterialsList.push_back(SciGlass21T);
+  saveMaterial(SciGlass21T);
+
+  // █▀ █▀▀ █ █▀▀ █░░ ▄▀█ █▀ █▀ ▄▄ ▀█ ▄▄ ▄█ ▄▄ █░░
+  // ▄█ █▄▄ █ █▄█ █▄▄ █▀█ ▄█ ▄█ ░░ █▄ ░░ ░█ ░░ █▄▄
+
+  G4Material* SciGlass21L = getBaseMaterial("SciGlass-2-1-L", BaseMaterialType::SciGlass);
+  {
+  	G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance SciGlass-2-1 (longitudinal), provided by T.Horn
+  	std::vector<G4double> transmittance = {417, 0, 420, 0.019291, 423, 0.051075, 426, 0.042103, 429, 0.12648, 432, 0.21571, 435, 0.24578, 438, 0.23868, 441, 0.23503, 444, 0.25494, 447, 0.40793, 450, 0.5183, 453, 0.60502, 456, 0.67893, 459, 0.78505, 462, 0.83117, 465, 0.90104, 468, 1.0902, 471, 1.1559, 474, 1.3481, 477, 1.4352, 480, 1.4727, 483, 1.683, 486, 1.8205, 489, 1.9382, 492, 2.035, 495, 2.1949, 498, 2.2811, 501, 2.4161, 504, 2.5173, 507, 2.5777, 510, 2.6604, 513, 2.7444, 516, 2.8094, 519, 2.8678, 522, 2.9097, 525, 2.9492, 528, 2.9932, 531, 3.0223, 534, 3.0592, 537, 3.0753, 540, 3.0353, 543, 3.0131, 546, 3.018, 549, 2.9284, 552, 2.8573, 555, 2.9063, 558, 2.9532, 561, 2.8478, 564, 2.7702, 567, 2.5904, 570, 2.5363, 573, 2.5765, 576, 2.4194, 579, 2.3411, 582, 2.1672, 585, 2.0485, 588, 2.0967, 591, 2.0769, 594, 1.8821, 597, 1.8649, 600, 1.8333, 603, 1.6409, 606, 1.6214, 609, 1.576, 612, 1.5059, 615, 1.296, 618, 1.175, 621, 1.1542, 624, 0.99208, 627, 0.71194, 630, 0.64321, 633, 0.6617, 636, 0.68889, 639, 0.71453, 642, 0.72238, 645, 0.67149, 648, 0.64248, 651, 0.50112, 654, 0.24482, 657, 0.16693, 660, 0.17344, 663, 0.16316, 666, 0.1589, 669, 0.091707, 672, 0.018016, 675, 0};
+  	G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 20*cm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    SciGlass21L->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(SciGlass21L);
+  fMaterialsList.push_back(SciGlass21L);
+  saveMaterial(SciGlass21L);
+
+  // █▀ █▀▀ █ █▀▀ █░░ ▄▀█ █▀ █▀ ▄▄ ▀█ ▄▄ ▀█ ▄▄ ▀█▀
+  // ▄█ █▄▄ █ █▄█ █▄▄ █▀█ ▄█ ▄█ ░░ █▄ ░░ █▄ ░░ ░█░
+
+  G4Material* SciGlass22T = getBaseMaterial("SciGlass-2-2-T", BaseMaterialType::SciGlass);
+  {
+  	G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance SciGlass-2-2 (transverse), provided by T.Horn
+  	std::vector<G4double> transmittance = {378, 0.0, 381, 0.01103, 384, 1.0857, 387, 3.6831, 390, 8.7839, 393, 15.653, 396, 23.589, 399, 31.801, 402, 39.377, 405, 45.978, 408, 51.624, 411, 56.384, 414, 60.175, 417, 63.24, 420, 65.698, 423, 67.773, 426, 69.263, 429, 70.711, 432, 71.78, 435, 72.741, 438, 73.537, 441, 74.013, 444, 74.554, 447, 74.903, 450, 75.383, 453, 75.732, 456, 76.188, 459, 76.62, 462, 76.881, 465, 77.071, 468, 77.36, 471, 77.854, 474, 78.082, 477, 78.427, 480, 78.443, 483, 78.596, 486, 78.669, 489, 78.846, 492, 78.836, 495, 79.185, 498, 79.346, 501, 79.447, 504, 79.677, 507, 79.657, 510, 79.677, 513, 79.61, 516, 79.777, 519, 79.944, 522, 80.103, 525, 80.238, 528, 80.152, 531, 80.205, 534, 80.064, 537, 80.197, 540, 80.138, 543, 80.295, 546, 80.378, 549, 80.398, 552, 80.349, 555, 80.124, 558, 80.192, 561, 80.025, 564, 80.197, 567, 80.128, 570, 80.169, 573, 79.908, 576, 79.799, 579, 79.748, 582, 79.559, 585, 79.478, 588, 79.319, 591, 79.389, 594, 79.173, 597, 79.083, 600, 78.793, 603, 78.956, 606, 78.92, 609, 78.651, 612, 78.766, 615, 78.721, 618, 78.809, 621, 78.568, 624, 78.432, 627, 78.464, 630, 78.545, 633, 78.506, 636, 78.493, 639, 78.444, 642, 78.098, 645, 77.775, 648, 77.534, 651, 77.519, 654, 77.198, 657, 77.335, 660, 77.344, 663, 77.244, 666, 76.701, 669, 76.603, 672, 76.692, 675, 76.497, 678, 76.408, 681, 76.151, 684, 76.015, 687, 75.802, 690, 75.607, 693, 75.435, 696, 75.215, 699, 75.087, 702, 74.939, 705, 74.527, 708, 74.451, 711, 74.128, 714, 73.602, 717, 73.648, 720, 73.349, 723, 72.866, 726, 72.368, 729, 72.465, 732, 71.806, 735, 71.998, 738, 71.474, 741, 70.167, 744, 70.597, 747, 70.115, 750, 69.862, 753, 69.461, 756, 68.131, 759, 67.538, 762, 67.344, 765, 68.45, 768, 69.379, 771, 66.99, 774, 63.946, 777, 64.371, 780, 63.714, 783, 61.401, 786, 60.852, 789, 61.755, 792, 64.239, 795, 66.485};
+  	G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 2*cm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    SciGlass22T->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(SciGlass22T);
+  fMaterialsList.push_back(SciGlass22T);
+  saveMaterial(SciGlass22T);
+
+  // █▀ █▀▀ █ █▀▀ █░░ ▄▀█ █▀ █▀ ▄▄ █░█ ▄▄ ▄█ ▄▄ ▀█▀
+  // ▄█ █▄▄ █ █▄█ █▄▄ █▀█ ▄█ ▄█ ░░ ▀▀█ ░░ ░█ ░░ ░█░
+
+  G4Material* SciGlass41T = getBaseMaterial("SciGlass-4-1-T", BaseMaterialType::SciGlass);
+  {
+  	G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance SciGlass-4-1 (transverse), provided by T.Horn
+  	std::vector<G4double> transmittance = {200, 0, 210, 0.349249, 220, 0.246796, 230, 0.191658, 240, 0.196597, 250, 0.308107, 260, 0.434015, 270, 0.54645, 280, 0.65847, 290, 0.773982, 300, 0.91034, 310, 0.979255, 320, 1.011377, 330, 1.128671, 340, 1.296961, 350, 1.568226, 360, 1.842787, 370, 1.966991, 380, 2.026229, 390, 7.620968, 400, 29.663076, 410, 51.267138, 420, 63.831608, 430, 70.420937, 440, 73.701574, 450, 75.71842, 460, 77.343924, 470, 78.7765, 480, 79.903564, 490, 80.694451, 500, 81.337697, 510, 81.71125, 520, 81.902702, 530, 81.982414, 540, 82.212062, 550, 82.078802, 560, 81.880259, 570, 81.692785, 580, 81.006776, 590, 80.284028, 600, 79.993184, 610, 79.504759, 620, 79.116835, 630, 78.468761, 640, 77.878152, 650, 77.549832, 660, 76.999302, 670, 76.682358, 680, 76.275268, 690, 75.748847, 700, 75.268014, 710, 74.851073, 720, 74.405903, 730, 73.884759, 740, 73.068089, 750, 72.43739, 760, 72.051719, 770, 71.443808, 780, 70.743174, 790, 70.149105, 800, 69.384455};
+  	G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 2*cm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    SciGlass41T->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(SciGlass41T);
+  fMaterialsList.push_back(SciGlass41T);
+  saveMaterial(SciGlass41T);
+
+  // █▀ █▀▀ █ █▀▀ █░░ ▄▀█ █▀ █▀ ▄▄ █░█ ▄▄ ▄█ ▄▄ █░░
+  // ▄█ █▄▄ █ █▄█ █▄▄ █▀█ ▄█ ▄█ ░░ ▀▀█ ░░ ░█ ░░ █▄▄
+
+  G4Material* SciGlass41L = getBaseMaterial("SciGlass-4-1-L", BaseMaterialType::SciGlass);
+  {
+  	G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance SciGlass-4-1 (longtitudinal), provided by T.Horn
+  	std::vector<G4double> transmittance = {200, 0, 210, 0.069765, 220, 0.027811, 230, 0.026263, 240, 0.036594, 250, 0.072978, 260, 0.10794, 270, 0.143685, 280, 0.176654, 290, 0.216414, 300, 0.252862, 310, 0.259973, 320, 0.264657, 330, 0.277921, 340, 0.338508, 350, 0.4099, 360, 0.499389, 370, 0.584733, 380, 0.639023, 390, 0.582725, 400, 0.510784, 410, 3.063759, 420, 11.140062, 430, 19.133428, 440, 24.645589, 450, 28.378947, 460, 32.328752, 470, 36.409245, 480, 40.067563, 490, 42.772399, 500, 44.835243, 510, 46.154412, 520, 46.812182, 530, 46.834435, 540, 46.634598, 550, 45.803039, 560, 44.500032, 570, 42.071389, 580, 38.863329, 590, 35.786495, 600, 33.530721, 610, 31.090229, 620, 28.659624, 630, 26.21967, 640, 24.106397, 650, 22.340703, 660, 20.634379, 670, 19.133298, 680, 17.885559, 690, 16.465658, 700, 15.091078, 710, 13.830955, 720, 12.645989, 730, 11.491253, 740, 10.274713, 750, 9.231806, 760, 8.400117, 770, 7.549239, 780, 6.801887, 790, 6.067987, 800, 5.404571};
+  	G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 20*cm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    SciGlass41L->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(SciGlass41L);
+  fMaterialsList.push_back(SciGlass41L);
+  saveMaterial(SciGlass41L);
+  generateEmissionMacro(SciGlass41L);
+
+  // █▀▀ █▀ █▀▀ █░░ ▄▀█ █▀ █▀ ▄▄ █▀█ ▄▄ ▀█▀
+  // █▄▄ ▄█ █▄█ █▄▄ █▀█ ▄█ ▄█ ░░ █▄█ ░░ ░█░
+
+  G4Material* CSGlass0T = getBaseMaterial("CSGlass-0-T", BaseMaterialType::CSGlass);
+  {
+  	G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::CSGlass);
+
+    // Transmittance CSGlass-0 (transverse), provided by T.Horn
+  	std::vector<G4double> transmittance = {390, 0.0, 400, 0.03, 410, 0.01, 420, 0.04, 430, 0.88, 440, 5.03, 450, 13.97, 460, 21.53, 470, 24.05, 480, 34.59, 490, 42.74, 500, 50.02, 510, 55.52, 520, 58.24, 530, 59.82, 540, 62.27, 550, 63.83, 560, 64.77, 570, 66.89, 580, 68.73, 590, 70.09, 600, 71.31, 610, 72.43, 620, 73.65, 630, 74.71, 640, 75.63, 650, 76.71, 660, 77.61, 670, 78.37, 680, 79.22, 690, 80.08, 700, 80.78, 710, 81.50, 720, 81.99, 730, 82.66, 740, 82.93, 750, 83.46, 760, 83.89, 770, 84.20, 780, 84.50, 790, 84.95, 800, 84.86};
+  	G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 2*cm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    CSGlass0T->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(CSGlass0T);
+  fMaterialsList.push_back(CSGlass0T);
+  saveMaterial(CSGlass0T);
+
+  // █▄▄ ▄▀█ █▀ █ ▀█ █▀█ █▀
+  // █▄█ █▀█ ▄█ █ █▄ █▄█ ▄█
+  // Barium disilicate
+
+  G4Material* BaSi2O5 = new G4Material("BaSi2O5", 3.8*g/cm3, 3, kStateSolid);
+  BaSi2O5->AddElement(elements->getElement("Ba"), 1);
+  BaSi2O5->AddElement(elements->getElement("Si"), 2);
+  BaSi2O5->AddElement(elements->getElement("O"), 5);
+
+  G4MaterialPropertiesTable* BaSi2O5MPT = new G4MaterialPropertiesTable();
+
+  // BaSi2O5 emission spectrum: https://sci-hub.do/https://pubs.rsc.org/en/Content/ArticleLanding/NJ/2016/C6NJ01831A
+  std::vector<G4double> digitizedBaSiOEmissionSpectra = {388.24531516183987, 0.07421150278292998, 406.64395229982966, 0.371057513914657, 425.5536626916525, 1.113172541743971, 441.90800681431, 2.263450834879407, 455.7069846678024, 3.6734693877551017, 466.95059625212946, 5.083487940630796, 476.6609880749574, 6.345083487940631, 487.39352640545144, 7.38404452690167, 498.12606473594553, 8.274582560296846, 511.41396933560475, 8.534322820037104, 524.7018739352641, 8.256029684601113, 537.9897785349233, 7.4397031539888685, 552.2998296422487, 6.122448979591837, 566.0988074957411, 4.7680890538033385, 580.9199318568996, 3.6178107606679024, 598.8074957410563, 2.3191094619666046, 622.3168654173764, 1.2987012987012978, 647.359454855196, 0.649350649350648, 669.84667802385, 0.371057513914657, 697.9557069846678, 0.12987012987012925};
+  G4MaterialPropertyVector* basioFastComponent = nmToMPV(digitizedBaSiOEmissionSpectra);
+
+  BaSi2O5MPT->AddProperty("SCINTILLATIONCOMPONENT1", basioFastComponent, true);
+  BaSi2O5MPT->AddProperty("SCINTILLATIONCOMPONENT2", basioFastComponent, true);
+
+  // BaSi2O5MPT->DumpTable();
+  BaSi2O5->SetMaterialPropertiesTable(BaSi2O5MPT);
+
+  printMaterialProperties(BaSi2O5);
+  fMaterialsList.push_back(BaSi2O5);
+  saveMaterial(BaSi2O5);
+
+  // █▀▀ █░█ █▄▄ █▀▀   █▄▄
+  // █▄▄ █▄█ █▄█ ██▄   █▄█
+  // SciGlass without scintillation
+  // 45.5 x 44.7 x 46.15 mm
+  // 3.9988 g/cc
+  G4Material* Cube61 = getBaseMaterial("Cube-6-1", BaseMaterialType::SciGlass, 3.9988*g/cm3);
+  {
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance Cube 6-1 (Side 1), provided by T.Horn
+    std::vector<G4double> transmittance = {360, 0, 370, 2.16279, 380, 10.896482, 390, 24.843423, 400, 42.832111, 410, 57.082554, 420, 64.611682, 430, 68.208564, 440, 70.084142, 450, 71.246156, 460, 73.192849, 470, 75.18825, 480, 76.809544, 490, 78.253883, 500, 79.473175, 510, 80.445834, 520, 81.144513, 530, 81.633263, 540, 82.24997, 550, 82.649501, 560, 82.882158, 570, 82.673031, 580, 82.17494, 590, 81.807493, 600, 81.831848, 610, 81.773229, 620, 81.66521, 630, 81.588036, 640, 81.6374, 650, 81.929863, 660, 82.014392, 670, 82.526795, 680, 83.247076, 690, 83.539822, 700, 83.975742, 710, 84.535437, 720, 85.005156, 730, 85.24228, 740, 85.078347, 750, 85.310917, 760, 85.798294, 770, 86.035154, 780, 86.117811, 790, 86.346551, 800, 86.032297};
+    G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 45.5*mm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    Cube61->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(Cube61);
+  fMaterialsList.push_back(Cube61);
+  saveMaterial(Cube61);
+  generateEmissionMacro(Cube61);
+
+  // █▀▀ █░█ █▄▄ █▀▀   █▀█
+  // █▄▄ █▄█ █▄█ ██▄   ▀▀█
+  // SciGlass with scintillation
+  // 46.4 x 46.5 x 48.6 mm
+  // 4.0375 g/cc
+  G4Material* Cube91 = getBaseMaterial("Cube-9-1", BaseMaterialType::SciGlass, 4.0375*g/cm3);
+  {
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance Cube 9-1 (Side 1), provided by T.Horn
+    std::vector<G4double> transmittance = {230, 0, 240, 0.03316, 250, 0.082422, 260, 0.130802, 270, 0.160895, 280, 0.18773, 290, 0.205044, 300, 0.216222, 310, 0.211861, 320, 0.210539, 330, 0.219392, 340, 0.272745, 350, 0.346259, 360, 0.423862, 370, 0.501118, 380, 0.568786, 390, 3.179175, 400, 22.657059, 410, 43.933347, 420, 54.610449, 430, 59.161575, 440, 61.407544, 450, 62.968147, 460, 64.432349, 470, 65.751359, 480, 66.994972, 490, 67.921845, 500, 68.742199, 510, 69.231281, 520, 69.366782, 530, 69.244247, 540, 69.069145, 550, 68.563096, 560, 67.892043, 570, 66.777364, 580, 65.452986, 590, 64.164411, 600, 63.090143, 610, 61.903752, 620, 60.571362, 630, 59.335159, 640, 58.127898, 650, 57.187949, 660, 56.003655, 670, 54.945339, 680, 54.031044, 690, 52.787157, 700, 51.595379, 710, 50.569626, 720, 49.547133, 730, 48.342423, 740, 47.074086, 750, 45.898912, 760, 44.93075, 770, 43.817648, 780, 42.673453, 790, 41.594499, 800, 40.461687};
+    G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 46.4*mm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    Cube91->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(Cube91);
+  fMaterialsList.push_back(Cube91);
+  saveMaterial(Cube91);
+  generateEmissionMacro(Cube91);
+
+  // █▀▀ █░█ █▄▄ █▀▀   █░█
+  // █▄▄ █▄█ █▄█ ██▄   ▀▀█
+  // CSGlass without scintillation
+  // 48 x 45.3 x 49 mm
+  // 4.0321 g/cc
+  G4Material* Cube41 = getBaseMaterial("Cube-4-1", BaseMaterialType::CSGlass, 4.0321*g/cm3);
+  {
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::CSGlass);
+
+    // Transmittance Cube 9-1 (Side 1), provided by T.Horn
+    std::vector<G4double> transmittance = {360, 0, 370, 0.108843, 380, 1.682287, 390, 7.626844, 400, 1.269189, 410, 9.969795, 420, 26.600303, 430, 50.716495, 440, 50.196701, 450, 56.173457, 460, 41.76715, 470, 23.889791, 480, 41.122552, 490, 52.41726, 500, 65.268738, 510, 75.107481, 520, 77.004327, 530, 75.852153, 540, 78.1795, 550, 78.078823, 560, 76.339234, 570, 78.535669, 580, 79.93886, 590, 79.875916, 600, 80.118864, 610, 80.421527, 620, 80.423071, 630, 80.423305, 640, 80.554503, 650, 80.938098, 660, 81.139541, 670, 81.699749, 680, 82.361223, 690, 82.660915, 700, 83.064758, 710, 83.631855, 720, 84.085849, 730, 84.414308, 740, 84.244261, 750, 84.619463, 760, 85.128313, 770, 85.453942, 780, 85.395023, 790, 85.546995, 800, 85.542119};
+    G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 48*mm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    Cube41->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(Cube41);
+  fMaterialsList.push_back(Cube41);
+  saveMaterial(Cube41);
+  generateEmissionMacro(Cube41);
+
+
+  // █▀▀ █░█ █▄▄ █▀▀ ▄█ █▀█
+  // █▄▄ █▄█ █▄█ ██▄ ░█ █▄█
+  // CSGlass with scintillation
+  // 40.87 x 49.8 x 46.28 mm
+  // 4.4608 g/cc
+  G4Material* Cube101 = getBaseMaterial("Cube-10-1", BaseMaterialType::CSGlass, 4.4608*g/cm3);
+  {
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::CSGlass);
+
+    // Transmittance Cube 9-1 (Side 1), provided by T.Horn
+    std::vector<G4double> transmittance = {350, 0, 360, 0.005025, 370, 0.969913, 380, 7.482468, 390, 18.925163, 400, 3.180728, 410, 14.894546, 420, 28.966188, 430, 41.995567, 440, 38.879515, 450, 41.002106, 460, 33.194447, 470, 23.948771, 480, 35.659269, 490, 45.279129, 500, 56.109482, 510, 64.199192, 520, 66.551225, 530, 66.520211, 540, 68.602506, 550, 68.835592, 560, 67.913282, 570, 69.441346, 580, 70.395579, 590, 70.561702, 600, 70.639553, 610, 70.431972, 620, 70.016352, 630, 69.742635, 640, 69.85136, 650, 70.64337, 660, 71.479986, 670, 72.94665, 680, 74.891631, 690, 76.318693, 700, 77.424448, 710, 78.623498, 720, 79.573384, 730, 80.102538, 740, 80.146442, 750, 80.639509, 760, 81.044733, 770, 81.12274, 780, 80.857597, 790, 80.60648, 800, 80.331084};
+    G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 40.87*mm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    Cube101->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(Cube101);
+  fMaterialsList.push_back(Cube101);
+  saveMaterial(Cube101);
+  generateEmissionMacro(Cube101);
+
+
+  // █▀ ▄▀█ █▀▄▀█ █▀█ █░░ █▀▀   ▄▀█
+  // ▄█ █▀█ █░▀░█ █▀▀ █▄▄ ██▄   █▀█
+  // Sample A - "Green" - in France
+  // 26 x 22 x 200 mm
+  // 4.4608 g/cc ?
+  G4Material* sampleA = getBaseMaterial("SciGlass-A", BaseMaterialType::SciGlass);
+  {
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance Sample A from "SciGlass-samples-tests.pdf"
+    std::vector<G4double> transmittance = {229.9, 0.0, 250.0, 0.1, 269.7, 0.2, 290.4, 0.3, 310.5, 0.3, 330.6, 0.4, 350.3, 0.4, 370.3, 0.6, 390.4, 0.6, 409.7, 3.0, 420.3, 11.2, 429.4, 19.1, 440.4, 24.6, 450.2, 28.4, 460.8, 32.3, 469.9, 36.4, 480.8, 39.9, 490.7, 42.7, 500.2, 44.8, 510.7, 46.2, 519.9, 46.7, 530.8, 46.8, 539.9, 46.5, 549.8, 45.7, 560.4, 44.4, 570.2, 42.0, 580.8, 38.7, 590.6, 35.8, 600.5, 33.5, 623.0, 27.9, 654.0, 21.5, 680.4, 17.7, 711.0, 13.7, 746.9, 9.7, 800.0, 5.4, 850.3, 0.0};
+    G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 200*mm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    sampleA->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(sampleA);
+  fMaterialsList.push_back(sampleA);
+  saveMaterial(sampleA);
+  generateEmissionMacro(sampleA);
+
+
+  // █▀▀ █░█ ▄▀█ ▄▄ ▀█ █▀█ ▀█ ▀█ ▄▄ ▀█ ▄▄ ▄█
+  // █▄▄ █▄█ █▀█ ░░ █▄ █▄█ █▄ █▄ ░░ █▄ ░░ ░█
+  // CUA-2022-2_1 for Berd's nPE vs source distance measurements
+  // 20 x 20 x 200 mm ?
+  // 4.4608 g/cc ?
+  G4Material* cua202221 = getBaseMaterial("CUA-2022-2_1", BaseMaterialType::SciGlass);
+  {
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::SciGlass);
+
+    // Transmittance CUA-2022-2-1 from: https://wiki.jlab.org/cuawiki/images/e/e7/Sci-Glass_Transmission_Graphs.pdf
+    std::vector<G4double> transmittance = {315.5, 0.0, 349.8, 1.4, 372.0, 1.9, 386.0, 2.0, 393.6, 7.5, 401.2, 19.7, 409.1, 30.2, 417.3, 35.3, 426.4, 37.2, 438.8, 37.6, 454.0, 39.4, 472.8, 42.8, 490.2, 45.7, 505.7, 47.0, 523.9, 45.7, 542.7, 42.2, 558.8, 37.5, 570.4, 33.7, 585.8, 27.2, 606.2, 21.3, 624.1, 16.4, 646.9, 12.0, 673.0, 8.1, 703.1, 5.0, 732.0, 3.1, 773.0, 1.6, 798.5, 0.0};
+    G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 200*mm;
+
+    // Absorption length
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    cua202221->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(cua202221);
+  fMaterialsList.push_back(cua202221);
+  saveMaterial(cua202221);
+  generateEmissionMacro(cua202221);
+
+
+  // █▀▄ █░█ █▀▄▀█ █▀▄▀█ █▄█
+  // █▄▀ █▄█ █░▀░█ █░▀░█ ░█░
+  G4Material* dummy = getBaseMaterial("dummy", BaseMaterialType::CSGlass, 4.4608*g/cm3);
+  {
+    // G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::CSGlass);
+
+    G4MaterialPropertiesTable* mpt = getBaseMPT(BaseMaterialType::PWO);
+
+    // Emission spectrum for PbWO4 (CRYTUR) provided by Jindřich Houžvička via email
+    // Normalized digitzed emission spectrum:
+//    std::vector<G4double> emissionSpectrum = {400, 0,
+//                                              401, 1,
+//                                              479, 1,
+//                                              480, 0
+//                                              };
+//    G4MaterialPropertyVector* fastComponent = nmToMPV(emissionSpectrum);
+//    G4MaterialPropertyVector* slowComponent = nmToMPV(emissionSpectrum);
+//
+//    mpt->AddProperty("SCINTILLATIONCOMPONENT1", fastComponent, true);
+//    mpt->AddProperty("SCINTILLATIONCOMPONENT2", slowComponent, true);
+
+    // Transmittance CRYTUR, provided by V.Berdnikov
+    std::vector<G4double> transmittance = {330, 0, 340, 1.566694, 350, 13.223613, 360, 45.441407, 370, 62.071972, 380, 67.140230, 390, 68.931434, 400, 69.772116, 410, 70.262557, 420, 70.646469, 430, 71.216135, 440, 71.501950, 450, 71.723380, 460, 71.975302, 470, 72.019692, 480, 72.192253, 490, 72.614533, 500, 72.789630, 510, 72.788232, 520, 72.912663, 530, 73.042799, 540, 73.235979, 550, 73.354468, 560, 73.453758, 570, 73.639631, 580, 73.695232, 590, 73.819757, 600, 73.957622, 610, 73.997395, 620, 74.067210, 630, 74.073362, 640, 74.278860, 650, 74.253225, 660, 74.346432, 670, 74.327692, 680, 74.598802, 690, 74.607074, 700, 74.542008, 710, 74.542790, 720, 74.641923, 730, 74.787570, 740, 74.585494, 750, 74.804944, 760, 74.843619, 770, 74.728880, 780, 74.860927, 790, 74.742771, 800, 74.925695};
+    G4MaterialPropertyVector* transmittanceMPV = nmToMPV(transmittance);
+    G4double transmittanceDistance = 20*cm;
+
+    // Absorption length PbWO4
+    G4MaterialPropertyVector* refractiveIndexMPV = mpt->GetProperty("RINDEX");
+    G4MaterialPropertyVector* absLengthMPV = calcAbsorptionLength(mpt, refractiveIndexMPV, transmittanceMPV, transmittanceDistance);
+    mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
+
+    dummy->SetMaterialPropertiesTable(mpt);
+  }
+  printMaterialProperties(dummy);
+  fMaterialsList.push_back(dummy);
+  saveMaterial(dummy);
+  // generateEmissionMacro(dummy);
 }
 
 Materials::~Materials() {
@@ -535,8 +964,10 @@ G4MaterialPropertyVector* Materials::calcAbsorptionLength(G4MaterialPropertiesTa
   // G4double eMin = std::min(refractiveIndex->GetMinLowEdgeEnergy(), measuredTransmittance->GetMinLowEdgeEnergy());
   // G4double eMax = std::max(refractiveIndex->GetMaxLowEdgeEnergy(), measuredTransmittance->GetMaxLowEdgeEnergy());
 
-  G4double eMin = std::max(refractiveIndex->GetMinLowEdgeEnergy(), measuredTransmittance->GetMinLowEdgeEnergy());
-  G4double eMax = measuredTransmittance->GetMaxLowEdgeEnergy();
+
+
+  G4double eMin = std::max(refractiveIndex->GetMinEnergy(), measuredTransmittance->GetMinEnergy());
+  G4double eMax = std::min(refractiveIndex->GetMaxEnergy(), measuredTransmittance->GetMaxEnergy());
 
   for (G4int i=0; i<nPoints; i++){
   	// Workaround the rounding of the last point... ABSLENGTH = -nan
@@ -584,12 +1015,12 @@ G4MaterialPropertyVector* Materials::calcAbsorptionLength(G4MaterialPropertiesTa
   }
 
   // Add custom values to the material properties table (for debugging output)
-  mpt->AddProperty("MY_TRANSMITTANCE", measuredTransmittance);
-  mpt->AddProperty("MY_REFLECTIVITY", reflectivityMPV);
-  mpt->AddProperty("MY_IDEAL_TRANSM", idealTransmittanceMPV);
+  mpt->AddProperty("MY_TRANSMITTANCE", measuredTransmittance, true);
+  mpt->AddProperty("MY_REFLECTIVITY", reflectivityMPV, true);
+  mpt->AddProperty("MY_IDEAL_TRANSM", idealTransmittanceMPV, true);
 
   // Return MPV
-  attenuationLengthMPV->SetSpline(true);
+  // attenuationLengthMPV->SetSpline(true); // Removed in Geant 11
   return attenuationLengthMPV;
 }
 
@@ -616,7 +1047,7 @@ void Materials::printMaterialProperties(G4Material* material){
   G4MaterialPropertiesTable* mpt = material->GetMaterialPropertiesTable();
   if (!mpt) return;
 
-  const std::map<G4int, G4MaterialPropertyVector*, std::less<G4int> >* pMapNew = mpt->GetPropertyMap();
+
   std::vector<G4double> fOpticalPhotonWavelength = {360, 400., 440., 480., 520., 560., 600., 640., 680., 720., 760};
 
   // Print photon wavelengths
@@ -637,13 +1068,20 @@ void Materials::printMaterialProperties(G4Material* material){
   // Print material properties
   std::vector<G4String> propertyNames = mpt->GetMaterialPropertyNames();
 
-  for(auto it = pMapNew->begin(); it!=pMapNew->end(); ++it){
-  	// Print property name
-    std::cout << std::left << std::setw(TAB_COLUMN_1) << propertyNames[it->first];
+  // Replaced in Geant4 v.11 with const std::vector<G4MaterialPropertyVector*>& GetProperties() const
+  //const std::map<G4int, G4MaterialPropertyVector*, std::less<G4int> >* pMapNew = mpt->GetPropertyMap();
+  std::vector<G4String> materialPropertiesNames = mpt->GetMaterialPropertyNames();
 
+  for(G4String propertyName : materialPropertiesNames){
+    G4MaterialPropertyVector* property = mpt->GetProperty(propertyName);
+    if (!property) continue;
+
+    // Print property name
+    std::cout << std::left << std::setw(TAB_COLUMN_1) << propertyName;
+    // Print property values
     for (G4int i = 0; i < (G4int)fOpticalPhotonWavelength.size(); i++){
-      G4bool b = true;
-      G4double value = it->second->GetValue(wavelengthNmToEnergy(fOpticalPhotonWavelength[i]), b);
+      G4bool b;
+      G4double value = property->GetValue(wavelengthNmToEnergy(fOpticalPhotonWavelength[i]), b);
       std::cout << std::left << std::setw(TAB_COLUMN) << value;
     }
 
@@ -651,63 +1089,61 @@ void Materials::printMaterialProperties(G4Material* material){
   }
 
   // Print material constant properties
-  const std::map<G4int, G4double, std::less<G4int> >* pConstMapNew = mpt->GetConstPropertyMap();
-  std::vector<G4String> const constPropertyNames = mpt->GetMaterialConstPropertyNames();
-
-  for(auto it = pConstMapNew->begin(); it!=pConstMapNew->end(); ++it){
-  	// Print property name
-    std::cout << std::left << std::setw(TAB_COLUMN_1) << constPropertyNames[it->first] << it->second << std::endl;
+  std::vector<G4String> constPropertyNames = mpt->GetMaterialConstPropertyNames();
+  for(G4String constPropertyName : constPropertyNames){
+    if (!mpt->ConstPropertyExists(constPropertyName)) continue;
+    // Print property name and value
+    G4double constPropertyValue = mpt->GetConstProperty(constPropertyName);
+    std::cout << std::left << std::setw(TAB_COLUMN_1) << constPropertyName << constPropertyValue << std::endl;
   }
 }
 
 void Materials::saveMaterial(G4Material* material){
   // Create output directory
+  std::cout << "Current directory: " << gSystem->GetWorkingDirectory() << std::endl;
   gSystem->MakeDirectory("./output/");
   gSystem->MakeDirectory("./output/materials");
 
   TString fileName = "./output/materials/" + material->GetName() + ".root";
-	TFile* file = new TFile(fileName, "RECREATE");
+  TFile* file = new TFile(fileName, "RECREATE");
   if (!file) {
     G4cout << "Materials::saveMaterial: cannot create output file \"" << fileName.Data() << "\"" << G4endl;
     return;
   }
   G4cout << "Materials::saveMaterial: created output file \"" << fileName.Data() << "\"" << G4endl;
 
-	G4MaterialPropertiesTable* mpt = material->GetMaterialPropertiesTable();
+  G4MaterialPropertiesTable* mpt = material->GetMaterialPropertiesTable();
 
   // Write Material Vector properties (as TGraph-s)
-	// Deprecated: mpt->GetPropertiesMap()
-  const std::map<G4int, G4MaterialPropertyVector*, std::less<G4int> >* pMap = mpt->GetPropertyMap();
   std::vector<G4String> propertyNames = mpt->GetMaterialPropertyNames();
 
-  for(auto it = pMap->begin(); it!=pMap->end(); ++it){
-  	// Print property name
-  	G4String propertyName = propertyNames[it->first];
-    std::cout << std::left << std::setw(TAB_COLUMN_1) << propertyName;
+  std::cout << "Saving Material \"" << material->GetName() << "\"" << std::endl;
+  for(G4String propertyName : propertyNames){
+    G4MaterialPropertyVector* property = mpt->GetProperty(propertyName);
+    if (!property) continue;
 
-    TGraph* graph = drawMPV(it->second);
+    // Print property name
+    std::cout << std::left << std::setw(TAB_COLUMN_1) << propertyName;
+    // Save property vector
+    TGraph* graph = drawMPV(property);
     G4String graphTitle = material->GetName() + " " + propertyName + ";Wavelength, nm;" + propertyName;
     graph->SetTitle(graphTitle);
-    // graph->SetDrawOption("AL*");
     graph->SetMarkerStyle(kStar);
     graph->Write(propertyName.c_str());
   }
 
   // Write Material constant properties (as TVectorD-s)
-  // Deprecated: mpt->GetPropertiesCMap();
-  const std::map<G4int, G4double, std::less<G4int> >* pConstMap = mpt->GetConstPropertyMap();
   std::vector<G4String> constPropertyNames = mpt->GetMaterialConstPropertyNames();
-
-  for(auto it = pConstMap->begin(); it!=pConstMap->end(); ++it){
-    // Print property name
-    G4String propertyName = constPropertyNames[it->first];
-    std::cout << std::left << std::setw(TAB_COLUMN_1) << propertyName;
-
+  for(G4String constPropertyName : constPropertyNames){
+    if (!mpt->ConstPropertyExists(constPropertyName)) continue;
+    G4double constPropertyValue = mpt->GetConstProperty(constPropertyName);
+    // Print property name and value
+    std::cout << std::left << std::setw(TAB_COLUMN_1) << constPropertyName;
     // Write a simple variable into ROOT file:
     // https://root-forum.cern.ch/t/writing-simple-variable-in-root-files/11094
     TVectorD* vectorD = new TVectorD(1);
-    vectorD[0] = it->second;
-    vectorD->Write(propertyName.c_str());
+    vectorD[0] = constPropertyValue;
+    vectorD->Write(constPropertyName);
   }
 
   file->Write();
@@ -731,26 +1167,25 @@ Materials* Materials::getInstance() {
 
 G4MaterialPropertyVector* Materials::evToMPV(std::vector<G4double> digitizedArray){
   assert(digitizedArray.size()%2 == 0);
-  G4MaterialPropertyVector* mpv = new G4MaterialPropertyVector();
+  G4MaterialPropertyVector* mpv = new G4MaterialPropertyVector(); // true for spline
   for (G4int i = 0; i < (G4int)digitizedArray.size(); i+=2){
    G4double energy = digitizedArray[i]*eV; // E (eV) = 1239.8 / l (nm)
    G4double value = digitizedArray[i+1];
    mpv->InsertValues(energy, value);
   }
-  mpv->SetSpline(true);
   return mpv;
 }
 
 G4MaterialPropertyVector* Materials::nmToMPV(std::vector<G4double> digitizedArrayNm){
   assert(digitizedArrayNm.size()%2 == 0);
-  G4MaterialPropertyVector* mpv = new G4MaterialPropertyVector();
-  for (G4int i = 0; i < (G4int)digitizedArrayNm.size(); i+=2){
+  G4MaterialPropertyVector* mpv = new G4MaterialPropertyVector(); // true for spline
+  // for (G4int i = 0; i < (G4int)digitizedArrayNm.size(); i+=2){
+  for (G4int i = (G4int)digitizedArrayNm.size()-2; i >=0 ; i-=2){
    G4double hc = 1239.84193;
    G4double energy = hc/digitizedArrayNm[i]*eV; // E (eV) = 1239.8 / l (nm)
    G4double value = digitizedArrayNm[i+1];
    mpv->InsertValues(energy, value);
   }
-  // mpv->SetSpline(true);
   return mpv;
 }
 
@@ -768,17 +1203,22 @@ G4double Materials::wavelengthNmToEnergy(G4double wavelength){
 }
 
 TGraph* Materials::drawMPV(G4MaterialPropertyVector *mpv) {
-//	G4double eMin = mpv->GetMinLowEdgeEnergy();
-//	G4double eMax = mpv->GetMaxLowEdgeEnergy();
-	TGraph* graph = new TGraph();
-//	G4int i = 0;
-	for (G4int i = 0; i < (G4int)mpv->GetVectorLength(); i++){
-		G4double e = mpv->GetLowEdgeEnergy(i);
-		G4bool b = false;
-		G4double wavelength = energyToWavelangthNm(e);
-		graph->SetPoint(i, wavelength, mpv->GetValue(e, b));
-	}
-	return graph;
+  // G4double eMin = mpv->GetMinLowEdgeEnergy();
+  // G4double eMax = mpv->GetMaxLowEdgeEnergy();
+  TGraph* graph = new TGraph();
+  // G4int i = 0;
+  // for (G4int i = (G4int)mpv->GetVectorLength()-1; i >=0 ; i--){
+  G4int vectorLength = (G4int)mpv->GetVectorLength();
+  for (G4int i=0; i<vectorLength; i++){
+    G4double e = mpv->GetLowEdgeEnergy(i);
+    G4double wavelength = energyToWavelangthNm(e);
+
+    G4bool b;
+    G4double value = mpv->GetValue(e, b);
+
+    graph->AddPoint(wavelength, value);
+  }
+  return graph;
 }
 
 G4Material* Materials::getBaseMaterial(const char* newName, BaseMaterialType bmt, G4double overrideDensity) {
@@ -787,21 +1227,36 @@ G4Material* Materials::getBaseMaterial(const char* newName, BaseMaterialType bmt
 
   // Create
 	if (bmt == BaseMaterialType::PWO){
-	  G4double pwoDensity = 8.28*g/cm3;
+	  G4double pwoDensity = 10*g/cm3;
 	  G4Material* pwo = new G4Material(newName, overrideDensity==0?pwoDensity:overrideDensity, 3, kStateSolid);
 	  pwo->AddElement(elements->getElement("Pb"), 1);
 	  pwo->AddElement(elements->getElement("W"), 1);
 	  pwo->AddElement(elements->getElement("O"), 4);
 	  return pwo;
 	}
+    else if (bmt == BaseMaterialType::SciGlassLight){
+      G4double sciGlassDensity = 10*g/cm3;
+      G4Material* sciGlass = new G4Material(newName, overrideDensity==0?sciGlassDensity:overrideDensity, 1, kStateSolid);
+      sciGlass->AddElement(elements->getElement("Pb"),  1);
+      return sciGlass;
+    }
 	else if (bmt == BaseMaterialType::SciGlass){
+	  G4double sciGlassDensity = 10*g/cm3;
+	  G4Material* sciGlass = new G4Material(newName, overrideDensity==0?sciGlassDensity:overrideDensity, 1, kStateSolid);
+	  sciGlass->AddElement(elements->getElement("Pb"), 1);
+	  return sciGlass;
 	}
 	else if (bmt == BaseMaterialType::CSGlass){
+	  G4double csGlassDensity = 10*g/cm3;
+	  G4Material* csGlass = new G4Material(newName, overrideDensity==0?csGlassDensity:overrideDensity, 1, kStateSolid);
+	  csGlass->AddElement(elements->getElement("Pb"), 1);
+	  return csGlass;
 	}
 	return NULL;
 }
 
 G4MaterialPropertiesTable* Materials::getBaseMPT(BaseMaterialType bmt) {
+  const G4int SciGlasstoPWOLightYieldCoefficient = 10;
   G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
 	if (bmt == BaseMaterialType::PWO){
     // Some of the GEANT4 optical parameters are outlined on pp.55 of
@@ -814,7 +1269,7 @@ G4MaterialPropertiesTable* Materials::getBaseMPT(BaseMaterialType bmt) {
     // Researchers refer to this RI data as well: http://geb.uni-giessen.de/geb/volltexte/2013/10382/pdf/EissnerTobias_2013_11_18.pdf
     std::vector<G4double> refractiveIndex = {375, 2.452, 400, 2.393, 425, 2.353, 450, 2.323, 475, 2.301, 500, 2.284, 525, 2.270, 550, 2.259, 575, 2.250, 600, 2.242, 625, 2.236, 650, 2.230, 675, 2.225, 700, 2.222};
     G4MaterialPropertyVector* refractiveIndexMPV = nmToMPV(refractiveIndex);
-    mpt->AddProperty("RINDEX", refractiveIndexMPV);
+    mpt->AddProperty("RINDEX", refractiveIndexMPV, true);
 
     // Older values used for simulation:
     // std::vector<G4double> wavelength         = { 400., 440., 480., 520., 560., 600.,  640., 680.}
@@ -848,7 +1303,7 @@ G4MaterialPropertiesTable* Materials::getBaseMPT(BaseMaterialType bmt) {
     // Absorption length PbWO4 - calculated https://sci-hub.do/https://doi.org/10.1016/0168-9002(93)91185-P
     // TODO: compare with https://sci-hub.do/https://doi.org/10.1016/S0168-9002(96)01016-9
     // TODO: compare with https://sci-hub.do/https://link.springer.com/article/10.1557/PROC-348-475
-    // mpt->AddProperty("ABSLENGTH", absLengthMPV);
+    // mpt->AddProperty("ABSLENGTH", absLengthMPV, true);
 
     // Energy spectrum for the fast scintillation component PbWO4 (arbitrary units)
     // PbWO4 emission spectrum (Berd sent paper): https://sci-hub.do/10.1088/1742-6596/293/1/012004
@@ -856,36 +1311,90 @@ G4MaterialPropertiesTable* Materials::getBaseMPT(BaseMaterialType bmt) {
 
     // Scintillation light yield - number of photons per unit energy deposition ~ 300 for SICCAS PbWO4
     // https://sci-hub.do/10.1016/j.phpro.2015.05.033 - says 300/MeV
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 300./MeV, true);
+
     // However we used 100/MeV to ensure correct PE output
     // Siccas Light Yield is 120/MeV? check here: https://sci-hub.ru/10.1109/23.603694
 	}
 	else if (bmt == BaseMaterialType::SciGlass){
+    // Refractive index for SciGlass. T.Horn said use 1.58 for now.
+    // std::vector<G4double> refractiveIndex = { 400, 1.58, 800, 1.58};
+
+    // Refractive index used from 40% BaO, 60% SiO2
+    // https://sci-hub.do/10.1016/S0022-3093(96)00609-6
+    std::vector<G4double> refractiveIndex = { 297, 1.699, 310, 1.691, 322, 1.682, 348, 1.673, 379, 1.662, 429, 1.653, 511, 1.644, 617, 1.637, 718, 1.633, 1031, 1.626,	1389, 1.621};
+    G4MaterialPropertyVector* refractiveIndexMPV = nmToMPV(refractiveIndex);
+    mpt->AddProperty("RINDEX", refractiveIndexMPV, true);
+
+    // Emission spectrum for SciGlass provided by T.Horn, normalized:
+    std::vector<G4double> emissionSpectrum = {364, 0, 365, 0.000216196129458, 366, 0.00019669833529, 367, 0.000217343058527, 368, 0.000216769593993, 369, 0.000223651168405, 370, 0.000223077703871, 371, 0.00021906345213, 372, 0.000209314555046, 373, 0.000244869356177, 374, 0.000244295891643, 375, 0.000263793685811, 376, 0.000276409905568, 377, 0.000285585338118, 378, 0.000309670848561, 379, 0.000297054628805, 380, 0.000313111635767, 381, 0.000339491004349, 382, 0.000384794702564, 383, 0.00042493721997, 384, 0.000394543599648, 385, 0.000424363755436, 386, 0.000463932808307, 387, 0.000478269421667, 388, 0.000518985403607, 389, 0.000568876818098, 390, 0.00058493382506, 391, 0.000569450282632, 392, 0.000684143189507, 393, 0.000750091610959, 394, 0.000817186961481, 395, 0.000858476407956, 396, 0.001041411594421, 397, 0.00103739734268, 398, 0.001098184583324, 399, 0.001292589060476, 400, 0.001401547322007, 401, 0.001516240228881, 402, 0.001618890380534, 403, 0.00177315234028, 404, 0.001990495398807, 405, 0.002171136727135, 406, 0.002373569707768, 407, 0.002567400720386, 408, 0.002824886296319, 409, 0.002979148256066, 410, 0.003179287378562, 411, 0.003425303663808, 412, 0.0037338275833, 413, 0.003940274815674, 414, 0.004243064089823, 415, 0.004536677931422, 416, 0.004854377283464, 417, 0.005014947353088, 418, 0.005458235438158, 419, 0.005693929361786, 420, 0.005965178086544, 421, 0.006241587992111, 422, 0.006554126163344, 423, 0.00692343732348, 424, 0.007141353846542, 425, 0.007523854690969, 426, 0.007703349090227, 427, 0.007974597814985, 428, 0.008213159061284, 429, 0.008436236765155, 430, 0.008740172968373, 431, 0.008992497363497, 432, 0.00915421436219, 433, 0.009405965292779, 434, 0.009579725046694, 435, 0.009622161422238, 436, 0.00995419738764, 437, 0.010063155649171, 438, 0.010083226907874, 439, 0.010123942889814, 440, 0.010297129179195, 441, 0.010629165144596, 442, 0.01040149972445, 443, 0.010645222151559, 444, 0.01057984719464, 445, 0.010644648687024, 446, 0.010754180413089, 447, 0.01072149293463, 448, 0.010710597108477, 449, 0.010586728769053, 450, 0.010738123406127, 451, 0.010660132229452, 452, 0.010798910646771, 453, 0.010602212311481, 454, 0.010599344988809, 455, 0.010661279158521, 456, 0.010432466809306, 457, 0.010512751844119, 458, 0.010373399962266, 459, 0.010243796977498, 460, 0.010230607293207, 461, 0.01008666769508, 462, 0.010071757617186, 463, 0.009867604242949, 464, 0.009820006686596, 465, 0.009828035190078, 466, 0.009683522127416, 467, 0.009476501430507, 468, 0.00944668127472, 469, 0.009189769163321, 470, 0.009106616805837, 471, 0.009027478700094, 472, 0.008731571000357, 473, 0.008805547925291, 474, 0.008542901168549, 475, 0.008352510943137, 476, 0.008374302595443, 477, 0.008107068122426, 478, 0.00788341695402, 479, 0.007775032157024, 480, 0.007611594764728, 481, 0.007531309729915, 482, 0.007482565244494, 483, 0.007167733215123, 484, 0.007195259512773, 485, 0.007176335183139, 486, 0.006976769525177, 487, 0.006807024023003, 488, 0.006660790566738, 489, 0.006671112928357, 490, 0.006567889312169, 491, 0.006382660267567, 492, 0.006263379644418, 493, 0.006125174691634, 494, 0.006039728476012, 495, 0.005903243916832, 496, 0.00577192053846, 497, 0.005691062039114, 498, 0.005588985351995, 499, 0.005419239849821, 500, 0.005337234421406, 501, 0.00530626733655, 502, 0.005231716947081, 503, 0.005060251051304, 504, 0.004982833339164, 505, 0.00484864263812, 506, 0.004819969411402, 507, 0.004596891707531, 508, 0.004581408165103, 509, 0.00442886659896, 510, 0.004364065106576, 511, 0.004306145188604, 512, 0.004205788895089, 513, 0.004128944647483, 514, 0.004064716619633, 515, 0.003814112618112, 516, 0.003897264975596, 517, 0.003734974512369, 518, 0.003672466878122, 519, 0.003592755307844, 520, 0.003419569018464, 521, 0.003379426501058, 522, 0.003332975873774, 523, 0.003283657923818, 524, 0.003205093282608, 525, 0.00310301659549, 526, 0.003039935496709, 527, 0.003027892741487, 528, 0.002879938891619, 529, 0.002766392913813, 530, 0.002726250396407, 531, 0.002640804180786, 532, 0.002599514734311, 533, 0.002590339301761, 534, 0.002572561901196, 535, 0.002387906321128, 536, 0.002362673881615, 537, 0.002293284672956, 538, 0.00233055986769, 539, 0.002284109240406, 540, 0.002112643344629, 541, 0.002222748535228, 542, 0.00203407870342, 543, 0.001968130281967, 544, 0.001970424140104, 545, 0.001914224615736, 546, 0.001858025091367, 547, 0.00175078722344, 548, 0.001827631471045, 549, 0.001704336596155, 550, 0.001712365099637, 551, 0.001637241245634, 552, 0.001621757703206, 553, 0.001570719359647, 554, 0.001534017629447, 555, 0.001429647084191, 556, 0.001445130626619, 557, 0.001445130626619, 558, 0.00131667457092, 559, 0.001331011184279, 560, 0.001362551733669, 561, 0.001312660319179, 562, 0.001267930085498, 563, 0.001220905993679, 564, 0.001182483869876, 565, 0.001171588043723, 566, 0.001146929068745, 567, 0.001063203246727, 568, 0.001068364427536, 569, 0.001038544271749, 570, 0.000956538843334, 571, 0.001017326083977, 572, 0.000941055300905, 573, 0.000884855776537, 574, 0.000865357982368, 575, 0.000903206641637, 576, 0.000865357982368, 577, 0.000796542238244, 578, 0.000792527986503, 579, 0.000774750585937, 580, 0.000749518146425, 581, 0.000731167281325, 582, 0.000776470979541, 583, 0.000646294530238, 584, 0.000641133349429, 585, 0.000694465551125, 586, 0.000659484214528, 587, 0.000659484214528, 588, 0.000610739729107, 589, 0.000583213431457, 590, 0.000584360360526, 591, 0.000559127921013, 592, 0.000568303353563, 593, 0.000528734300692, 594, 0.000493752964095, 595, 0.000526440442554, 596, 0.000478842886201, 597, 0.000488591783285, 598, 0.000422069897298, 599, 0.000451316588551, 600, 0.000417482181023, 601, 0.000427231078108, 602, 0.000411174071145, 603, 0.000423790290901, 604, 0.000377913128152, 605, 0.000392823206045, 606, 0.000373325411877, 607, 0.00040257210313, 608, 0.00036587037293, 609, 0.00035669494038, 610, 0.000334903288074, 611, 0.000313111635767, 612, 0.000334329823539, 613, 0.000325154390989, 614, 0.000291319983461, 615, 0.000305656596821, 616, 0.00029246691253, 617, 0.000287879196255, 618, 0.000264367150346, 619, 0.000268954866621, 620, 0.000254618253261, 621, 0.000263793685811, 622, 0.000255191717796, 623, 0.000232826600955, 624, 0.000251177466055, 625, 0.000221930774802, 626, 0.000220783845733, 627, 0.000221357310268, 628, 0.00021504920039, 629, 0.000190390225412, 630, 0.000202432980634, 631, 0.00020071258703, 632, 0.000184655580068, 633, 0.000183508650999, 634, 0.000161716998693, 635, 0.000155982353349, 636, 0.000163437392296, 637, 0.000158849676021, 638, 0.000154261959746, 639, 0.000140498810921, 640, 0.000138778417318, 641, 0.000151394637074, 642, 0.00013247030744, 643, 0.000134190701043, 644, 0.000145659991731, 645, 0.000151968101609, 646, 0.000122147945821, 647, 0.000123868339424, 648, 0.000127882591165, 649, 0.000133617236509, 650, 0.000127882591165, 651, 0};
+    // std::vector<G4double> emissionSpectrum = {364, 0, 365, 0.000216196129458, 375, 0.000263793685811, 385, 0.000424363755436, 395, 0.000858476407956, 405, 0.002171136727135, 415, 0.004536677931422, 425, 0.007523854690969, 435, 0.009622161422238, 445, 0.010644648687024, 455, 0.010661279158521, 465, 0.009828035190078, 475, 0.008352510943137, 485, 0.007176335183139, 495, 0.005903243916832, 505, 0.00484864263812, 515, 0.003814112618112, 525, 0.00310301659549, 535, 0.002387906321128, 545, 0.001914224615736, 555, 0.001429647084191, 565, 0.001171588043723, 575, 0.000903206641637, 585, 0.000694465551125, 595, 0.000526440442554, 605, 0.000392823206045, 615, 0.000305656596821, 625, 0.000221930774802, 635, 0.000155982353349, 645, 0.000151968101609, 650, 0.000127882591165, 651, 0};
+
+    // change contents of vector
+//    std::vector<G4double>::iterator p;
+//    p = emissionSpectrum.begin();
+//      while(p != emissionSpectrum.end()) {
+//        *p = *p+100;
+//        p++;
+//      }
+    // Tweak: try not normalized
+    // for (G4double i : emissionSpectrum) i = i*100;
+    G4MaterialPropertyVector* fastComponent = nmToMPV(emissionSpectrum);
+    G4MaterialPropertyVector* slowComponent = nmToMPV(emissionSpectrum);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", fastComponent, true);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT2", slowComponent, true);
+
+    // Overleaf French studies: test size samples have a light yield 11-35 (avg. 20) times that of PWO. We take ~ 10 times more
+    mpt->AddConstProperty("SCINTILLATIONYIELD", SciGlasstoPWOLightYieldCoefficient*300./MeV, true);
 	}
 	else if (bmt == BaseMaterialType::CSGlass){
+    // Refractive index for SciGlass. T.Horn said use 1.58 for now.
+    // std::vector<G4double> refractiveIndex = { 400, 1.58, 800, 1.58};
 
+    // Refractive index used from 40% BaO, 60% SiO2
+    // https://sci-hub.do/10.1016/S0022-3093(96)00609-6
+    std::vector<G4double> refractiveIndex = { 297, 1.699, 310, 1.691, 322, 1.682, 348, 1.673, 379, 1.662, 429, 1.653, 511, 1.644, 617, 1.637, 718, 1.633, 1031, 1.626,	1389, 1.621};
+    G4MaterialPropertyVector* refractiveIndexMPV = nmToMPV(refractiveIndex);
+    mpt->AddProperty("RINDEX", refractiveIndexMPV, true);
+
+    // Emission spectrum for SciGlass provided by T.Horn, normalized:
+    // Custom emission spectrum (added 0 values on the sides)
+    std::vector<G4double> emissionSpectrum = {449, 0.0, 450, 0.002661594724972, 451, 0.002369886292445, 452, 0.002279828655557, 453, 0.002357160756797, 454, 0.002226968738253, 455, 0.00207328342313, 456, 0.002014550181682, 457, 0.002002803533392, 458, 0.002018465731111, 459, 0.001931344756296, 460, 0.001950922503446, 461, 0.00188729482521, 462, 0.001947985841373, 463, 0.00189512592407, 464, 0.001897083698785, 465, 0.001816814935472, 466, 0.001857928204486, 467, 0.001962669151735, 468, 0.002079156747275, 469, 0.001932323643654, 470, 0.001841287119409, 471, 0.001629847450194, 472, 0.001630826337552, 473, 0.001821709372259, 474, 0.001553494236311, 475, 0.0016043963789, 476, 0.001620058576619, 477, 0.001497697656935, 478, 0.001526085390302, 479, 0.00141840778098, 480, 0.001433091091342, 481, 0.001566219771958, 482, 0.001424281105125, 483, 0.00149965543165, 484, 0.001467352148854, 485, 0.001404703357975, 486, 0.00143015442927, 487, 0.001348906778599, 488, 0.00132541348202, 489, 0.001357716764816, 490, 0.001443858852274, 491, 0.001421344443052, 492, 0.00148790878336, 493, 0.001512380967297, 494, 0.001508465417867, 495, 0.001401766695903, 496, 0.001380231174038, 497, 0.00141449223155, 498, 0.00130192018544, 499, 0.0013949144844, 500, 0.001291152424508, 501, 0.001285279100363, 502, 0.001274511339431, 503, 0.001346949003884, 504, 0.001286257987721, 505, 0.001269616902644, 506, 0.001294089086581, 507, 0.001238292507205, 508, 0.001259828029069, 509, 0.001320519045232, 510, 0.00121675698534, 511, 0.001352822328029, 512, 0.001278426888861, 513, 0.001288215762436, 514, 0.001238292507205, 515, 0.001213820323268, 516, 0.001223609196843, 517, 0.001278426888861, 518, 0.001235355845132, 519, 0.001322476819947, 520, 0.001213820323268, 521, 0.00132541348202, 522, 0.001360653426889, 523, 0.001246123606064, 524, 0.001268638015286, 525, 0.001276469114146, 526, 0.001276469114146, 527, 0.001361632314246, 528, 0.00131366683373, 529, 0.001287236875078, 530, 0.001251996930209, 531, 0.001287236875078, 532, 0.001323455707305, 533, 0.001342054567097, 534, 0.001218714760055, 535, 0.001163897068037, 536, 0.001230461408345, 537, 0.001295067973938, 538, 0.001270595790001, 539, 0.001247102493422, 540, 0.001323455707305, 541, 0.001260806916427, 542, 0.001379252286681, 543, 0.00140666113269, 544, 0.001532937601804, 545, 0.001488887670718, 546, 0.001423302217767, 547, 0.001571114208746, 548, 0.001547620912166, 549, 0.001623974126049, 550, 0.00158481863175, 551, 0.001731651735372, 552, 0.001878484838993, 553, 0.002035106816188, 554, 0.002302343064779, 555, 0.002421767322391, 556, 0.002755567911289, 557, 0.003086431838116, 558, 0.003537698909911, 559, 0.003835280666583, 560, 0.004556720649041, 561, 0.006647624044606, 562, 0.009690984838993, 563, 0.01150192645032, 564, 0.010942981769202, 565, 0.008264745959153, 566, 0.006972614647287, 567, 0.006193420310738, 568, 0.006193420310738, 569, 0.006384303345445, 570, 0.006459677671971, 571, 0.006329485653427, 572, 0.005580636824959, 573, 0.004914014534519, 574, 0.004367795389049, 575, 0.00395274714948, 576, 0.00347211345696, 577, 0.003380098045358, 578, 0.003159848389926, 579, 0.003024761934595, 580, 0.003031614146097, 581, 0.002947429833354, 582, 0.00280940671595, 583, 0.002740884600927, 584, 0.002927852086205, 585, 0.002826047801027, 586, 0.002917084325273, 587, 0.003143207304849, 588, 0.003341921438416, 589, 0.003662996491668, 590, 0.004124052437038, 591, 0.004641883849142, 592, 0.005077488723218, 593, 0.005619792319258, 594, 0.006873747024182, 595, 0.00761084920436, 596, 0.008925494925448, 597, 0.012198894248841, 598, 0.017030682245333, 599, 0.02249581036211, 600, 0.026223413419371, 601, 0.025178940608946, 602, 0.022193334168651, 603, 0.019057957962661, 604, 0.016301411164015, 605, 0.015392024808921, 606, 0.015084654178674, 607, 0.014759663575993, 608, 0.01430741761684, 609, 0.013605555381531, 610, 0.012847896566846, 611, 0.011746648289688, 612, 0.01075014095978, 613, 0.009520658438792, 614, 0.008820753978198, 615, 0.007582461470994, 616, 0.006759217203358, 617, 0.005986875078311, 618, 0.005099024245082, 619, 0.004147545733617, 620, 0.003814724032076, 621, 0.003101115148478, 622, 0.002734032389425, 623, 0.002505951635133, 624, 0.00225927202105, 625, 0.002152573299085, 626, 0.00208894562085, 627, 0.002120270016289, 628, 0.00207719897256, 629, 0.002118312241574, 630, 0.002078177859917, 631, 0.002164319947375, 632, 0.002233820949756, 633, 0.002560769327152, 634, 0.002522592720211, 635, 0.00271249686756, 636, 0.002924915424132, 637, 0.003201940546297, 638, 0.00348777565468, 639, 0.00394491605062, 640, 0.004278716639519, 641, 0.004378563149981, 642, 0.004601749467485, 643, 0.005172440796893, 644, 0.00601036837489, 645, 0.007221252036086, 646, 0.008409621288059, 647, 0.009547088397444, 648, 0.009747760305726, 649, 0.00913008238316, 650, 0.007974995301341, 651, 0.007178180992357, 652, 0.006523305350207, 653, 0.006444015474251, 654, 0.006284456834983, 655, 0.006042671657687, 656, 0.005862556383912, 657, 0.005451423693773, 658, 0.004916951196592, 659, 0.00471236373888, 660, 0.004273822202731, 661, 0.003965472685127, 662, 0.003617967673224, 663, 0.003258716013031, 664, 0.002819195589525, 665, 0.002629291442175, 666, 0.002317026375141, 667, 0.002106565593284, 668, 0.001959732489663, 669, 0.001769828342313, 670, 0.001637678549054, 671, 0.001504549868438, 672, 0.001415471118907, 673, 0.001268638015286, 674, 0.001293110199223, 675, 0.001211862548553, 676, 0.001145298208245, 677, 0.001205989224408, 678, 0.001089501628869, 679, 0.001032726162135, 680, 0.001074818318506, 681, 0.001087543854154, 682, 0.001117889362235, 683, 0.001048388359855, 684, 0.001133551559955, 685, 0.001091459403584, 686, 0.001095374953013, 687, 0.001151171532389, 688, 0.001138445996742, 689, 0.001203052562336, 690, 0.001148234870317, 691, 0.001204031449693, 692, 0.001207946999123, 693, 0.001159981518607, 694, 0.001206968111765, 695, 0.001200115900263, 696, 0.001247102493422, 697, 0.001249060268137, 698, 0.001251018042852, 699, 0.001211862548553, 700, 0.001213820323268, 701, 0.00130192018544, 702, 0.001322476819947, 703, 0.001300941298083, 704, 0.001434069978699, 705, 0.001413513344192, 706, 0.001477141022428, 707, 0.001574050870818, 708, 0.001459521049994, 709, 0.001565240884601, 710, 0.001516296516727, 711, 0.001575029758176, 712, 0.001517275404085, 713, 0.001546642024809, 714, 0.001506507643152, 715, 0.001387083385541, 716, 0.001445816626989, 717, 0.001408618907405, 718, 0.001351843440672, 719, 0.001408618907405, 720, 0.001346949003884, 721, 0.001345970116527, 722, 0.001387083385541, 723, 0.001276469114146, 724, 0.001280384663576, 725, 0.001260806916427, 726, 0.001185432589901, 727, 0.001164875955394, 728, 0.001199137012906, 729, 0.00114725598296, 730, 0.001129636010525, 731, 0.001093417178298, 732, 0.001205989224408, 733, 0.001067966107004, 734, 0.001096353840371, 735, 0.001081670530009, 736, 0.001027831725348, 737, 0.001114952700163, 738, 0.001035662824208, 739, 0.00111201603809, 740, 0.001055240571357, 741, 0.000990634005764, 742, 0.001015106189701, 743, 0.00101902173913, 744, 0.001020000626488, 745, 0.00102293728856, 746, 0.001013148414986, 747, 0.001027831725348, 748, 0.001045451697782, 749, 0.001064050557574, 750, 0.001060135008144, 751, 0};
+
+    // Avoiding the exceptions: trying non-normalized emission (not worked)
+    // Avoiding the exceptions: trying extend emission spectrum to the left (not worked)
+    G4MaterialPropertyVector* fastComponent = nmToMPV(emissionSpectrum);
+    G4MaterialPropertyVector* slowComponent = nmToMPV(emissionSpectrum);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", fastComponent, true);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT2", slowComponent, true);
+
+
+    // Overleaf French studies: test size samples have a light yield 11-35 (avg. 20) times that of PWO. We take ~ 10 times more
+    mpt->AddConstProperty("SCINTILLATIONYIELD", SciGlasstoPWOLightYieldCoefficient*300./MeV, true);
   }
-  else if (bmt == BaseMaterialType::Dummy){
-  }
-  mpt->AddConstProperty("SCINTILLATIONYIELD", 300./MeV);
 
   // Fluctuation of mean number of optical photons produces for the step
-  mpt->AddConstProperty("RESOLUTIONSCALE", 1.0);
+  mpt->AddConstProperty("RESOLUTIONSCALE", 1.0, true);
 
-  mpt->AddConstProperty("FASTTIMECONSTANT", 13*ns);
-  mpt->AddConstProperty("SLOWTIMECONSTANT", 412*ns);
-  mpt->AddConstProperty("YIELDRATIO", 0.9);  
+  mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 13*ns, true);
+  mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 412*ns, true);
+  mpt->AddConstProperty("SCINTILLATIONYIELD1", 0.9);
+  mpt->AddConstProperty("SCINTILLATIONYIELD2", 0.1);
 
   // Scintillation rise time
-  mpt->AddConstProperty("FASTSCINTILLATIONRISETIME", 10*ps);
-  mpt->AddConstProperty("SLOWSCINTILLATIONRISETIME", 50*ps);
+  mpt->AddConstProperty("SCINTILLATIONRISETIME1", 10*ps, true);
+  mpt->AddConstProperty("SCINTILLATIONRISETIME2", 50*ps, true);
   return mpt;
 }
 
 // Automatically generate macros for emission
 void Materials::generateEmissionMacro(G4Material* material){
   G4MaterialPropertiesTable* mpt = material->GetMaterialPropertiesTable();
-  G4MaterialPropertyVector* mpv = mpt->GetProperty("FASTCOMPONENT");
 
+  // TODO: sum vectors from sfast and slow components
+  G4MaterialPropertyVector* mpv1 = mpt->GetProperty("SCINTILLATIONCOMPONENT1");
+  G4MaterialPropertyVector* mpv2 = mpt->GetProperty("SCINTILLATIONCOMPONENT2");
+  G4double sy1 = mpt->GetConstProperty("SCINTILLATIONYIELD1");
   G4String emissionFilename = "macros/gps-op-emission-" + material->GetName() + ".mac";
 
   std::ofstream myfile;
@@ -897,6 +1406,8 @@ void Materials::generateEmissionMacro(G4Material* material){
   myfile << "/gps/pos/type Point" << std::endl;
   myfile << "/gps/ang/type iso" << std::endl;
   myfile << std::endl;
+//  myfile << "/gps/number 1000000" << std::endl;
+//  myfile << std::endl;
   myfile << "# In example #18" << std::endl;
 
   // These line for user-defined histogram
@@ -908,10 +1419,12 @@ void Materials::generateEmissionMacro(G4Material* material){
   myfile << "/gps/hist/type arb" << std::endl;
 
   myfile << std::endl;
-  for (int i = 0; i<(int)mpv->GetVectorLength(); i++){
-    G4double e = mpv->Energy(i);
+  for (int i = 0; i<(int)mpv1->GetVectorLength(); i++){
+    G4double e = mpv1->Energy(i);
     G4bool b = true;
-    G4double value = mpv->GetValue(e, b);
+    G4double value1 = mpv1->GetValue(e, b);
+    G4double value2 = mpv2->GetValue(e, b);
+    G4double value = sy1*value1 + (1-sy1)*value2;
     myfile << "/gps/hist/point " << e << " " << value << std::endl;
   }
   myfile << std::endl;

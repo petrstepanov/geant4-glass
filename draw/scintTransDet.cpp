@@ -23,7 +23,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <TApplication.h>
-#include "include/utilities.h"
+#include "./include/utilities.h"
 
 Int_t uuid = 0;
 

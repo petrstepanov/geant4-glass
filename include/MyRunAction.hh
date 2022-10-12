@@ -35,7 +35,6 @@
 #define MyRunAction_h 1
 
 #include "G4UserRunAction.hh"
-#include "HistoManager.hh"
 #include "G4Run.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

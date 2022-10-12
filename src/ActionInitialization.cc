@@ -27,12 +27,14 @@
 /// \file ActionInitialization.cc
 /// \brief Implementation of the ActionInitialization class
 
-#include <MyRunAction.hh>
-#include <WorldEscapeSteppingAction.hh>
+#include "ActionInitialization.hh"
+
+#include "WorldEscapeSteppingAction.hh"
 #include "G4MultiEventAction.hh"
 #include "G4MultiSteppingAction.hh"
 
 #include "EventAction.hh"
+#include "MyRunAction.hh"
 
 #include "G4UserEventAction.hh"
 #include "OpticalEventAction.hh"
@@ -41,7 +43,6 @@
 #include "OpticalSteppingAction.hh"
 
 #include "OpticalStackingAction.hh"
-#include "ActionInitialization.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "HistoManager.hh"
 #include "G4Utils.hh"
@@ -49,7 +50,7 @@
 #include <memory>
 // For analysis manager
 // https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/BackupVersions/V10.7/html/Analysis/managers.html
-#include "g4analysis.hh"
+// #include "g4analysis.hh"
 
 class DetectorConstruction;
 
@@ -104,7 +105,7 @@ void ActionInitialization::Build() const
   auto multiEventAction = new G4MultiEventAction{};
   auto multiSteppingAction = new G4MultiSteppingAction{};
 
-  if (G4Utils::getDetectorConstruction()->GetSaveEnergyDeposition()){
+  if (G4Utils::getDetectorConstruction()->GetUsePrimitiveScorer()){
     // Extract deposited energy in every crystal and save in Histogram Manager
     // https://gitlab.cern.ch/Gaussino/Gaussino/blob/e26413adf0060bbedbfe5b94604a933bf5f49a22/Sim/GiGaMT/src/Lib/GiGaActionInitializer.cpp
     // https://stackoverflow.com/questions/17473900/unique-ptr-to-a-derived-class-as-an-argument-to-a-function-that-takes-a-unique-p
